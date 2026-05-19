@@ -41,6 +41,14 @@
     🔐 Entrar
   </button>
 
+  <button id="btnPanel"
+  class="oculto"
+  onclick="mostrarSeccion('panelRegistro')">
+
+    ⚙ Panel
+
+  </button>
+
 </div>
 
 <!-- CONTENIDO -->
@@ -52,8 +60,8 @@
     <h1>🌱 ¿Qué es la Lavanda?</h1>
 
     <p>
-      La lavanda es una planta aromática conocida
-      por su agradable olor y propiedades relajantes.
+      La lavanda es una planta aromática
+      conocida por sus propiedades relajantes.
     </p>
 
     <img
@@ -62,10 +70,29 @@
 
   </section>
 
-  <!-- PANEL REGISTRADOR -->
+  <!-- PANEL -->
   <section id="panelRegistro" class="seccion">
 
-    <h1>✍ Panel Registrador</h1>
+    <h1>✍ Panel</h1>
+
+    <!-- PANEL ADMIN -->
+    <div id="adminPanel" class="oculto">
+
+      <div class="card">
+
+        <h2>🛠 Panel Administrador</h2>
+
+        <button onclick="cambiarColor()">
+          🎨 Cambiar Color
+        </button>
+
+        <button onclick="modoMantenimiento()">
+          🚧 Mantenimiento
+        </button>
+
+      </div>
+
+    </div>
 
     <!-- REGISTRO -->
     <div class="card">

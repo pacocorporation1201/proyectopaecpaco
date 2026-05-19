@@ -61,6 +61,10 @@ function entrar(){
 
       usuarioActual = "registro";
 
+      document
+      .getElementById("btnPanel")
+      .classList.remove("oculto");
+
       alert("Bienvenido registrador");
 
       mostrarSeccion("panelRegistro");
@@ -80,6 +84,14 @@ function entrar(){
     if(pass === "admin123"){
 
       usuarioActual = "admin";
+
+      document
+      .getElementById("btnPanel")
+      .classList.remove("oculto");
+
+      document
+      .getElementById("adminPanel")
+      .classList.remove("oculto");
 
       alert("Bienvenido administrador");
 
@@ -126,6 +138,14 @@ function crearRegistro(){
         <p>📅 Fecha: ${fecha}</p>
 
         <img src="${e.target.result}">
+
+        ${
+        usuarioActual === "admin"
+        ? `<button onclick="eliminarPublicacion(this)">
+        🗑 Eliminar
+        </button>`
+        : ""
+        }
 
         <div class="comentarios">
 
@@ -180,6 +200,14 @@ function crearArticulo(){
 
         <img src="${e.target.result}">
 
+        ${
+        usuarioActual === "admin"
+        ? `<button onclick="eliminarPublicacion(this)">
+        🗑 Eliminar
+        </button>`
+        : ""
+        }
+
         <div class="comentarios">
 
           <input
@@ -227,6 +255,14 @@ function crearDiagrama(){
         <h2>${titulo}</h2>
 
         <img src="${e.target.result}">
+
+        ${
+        usuarioActual === "admin"
+        ? `<button onclick="eliminarPublicacion(this)">
+        🗑 Eliminar
+        </button>`
+        : ""
+        }
 
         <div class="comentarios">
 
@@ -276,6 +312,14 @@ function crearTutorial(){
 
       </a>
 
+      ${
+      usuarioActual === "admin"
+      ? `<button onclick="eliminarPublicacion(this)">
+      🗑 Eliminar
+      </button>`
+      : ""
+      }
+
       <div class="comentarios">
 
         <input
@@ -320,4 +364,46 @@ function agregarComentario(event,input){
     input.value = "";
   }
 
+}
+
+// CAMBIAR COLOR
+function cambiarColor(){
+
+  const color =
+  prompt("Escribe un color");
+
+  document.body.style.background = color;
+}
+
+// MODO MANTENIMIENTO
+function modoMantenimiento(){
+
+  const secciones = [
+
+    "registros",
+    "articulos",
+    "diagramas",
+    "tutoriales"
+
+  ];
+
+  secciones.forEach(id => {
+
+    document.getElementById(id).innerHTML = `
+
+      <div class="card">
+
+        <h1>🚧 En mantenimiento</h1>
+
+      </div>
+
+    `;
+  });
+
+}
+
+// ELIMINAR PUBLICACION
+function eliminarPublicacion(btn){
+
+  btn.parentElement.remove();
 }
