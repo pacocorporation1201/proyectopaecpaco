@@ -1,440 +1,211 @@
-let usuarioActual = "visitante";
+// =======================
+// CLIMA
+// =======================
 
-let mantenimiento = {
-  registros:false,
-  articulos:false,
-  diagramas:false,
-  tutoriales:false
-};
+async function obtenerClima(){
 
-// CARGAR DATOS AL INICIAR
-window.onload = function(){
+  try{
 
-  cargarDatos();
+    const res =
+    await fetch(
+"https://api.open-meteo.com/v1/forecast?latitude=20.59&longitude=-100.39&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=auto"
+    );
+
+    const data = await res.json();
+
+    const actual =
+    data.current_weather;
+
+    const dias =
+    data.daily;
+
+    let html = `
+
+      <h2>
+      🌡 Temperatura:
+      ${actual.temperature}°C
+      </h2>
+
+      <p>
+      💨 Viento:
+      ${actual.windspeed} km/h
+      </p>
+
+      <hr>
+
+      <h3>
+      📅 Pronóstico
+      </h3>
+
+    `;
+
+    for(let i=0; i<5; i++){
+
+      html += `
+
+        <p>
+
+        📆 ${dias.time[i]}
+
+        | 🔺 ${dias.temperature_2m_max[i]}°C
+
+        | 🔻 ${dias.temperature_2m_min[i]}°C
+
+        </p>
+
+      `;
+    }
+
+    document
+    .getElementById("clima")
+    .innerHTML = html;
+
+  }catch(error){
+
+    console.log(error);
+
+  }
 
 }
 
-// GUARDAR EN LOCALSTORAGE
-function guardarDatos(){
+obtenerClima();
+
+
+// =======================
+// GUARDAR LOCAL
+// =======================
+
+function guardarLocal(){
 
   localStorage.setItem(
     "registros",
-    document.getElementById("listaRegistros").innerHTML
+    document.getElementById(
+      "listaRegistros"
+    ).innerHTML
   );
 
   localStorage.setItem(
     "articulos",
-    document.getElementById("listaArticulos").innerHTML
+    document.getElementById(
+      "listaArticulos"
+    ).innerHTML
   );
 
   localStorage.setItem(
     "diagramas",
-    document.getElementById("listaDiagramas").innerHTML
+    document.getElementById(
+      "listaDiagramas"
+    ).innerHTML
   );
 
   localStorage.setItem(
     "tutoriales",
-    document.getElementById("listaTutoriales").innerHTML
+    document.getElementById(
+      "listaTutoriales"
+    ).innerHTML
   );
 
-  localStorage.setItem(
-    "mantenimiento",
-    JSON.stringify(mantenimiento)
-  );
 }
 
-// CARGAR DATOS
-function cargarDatos(){
+function cargarLocal(){
 
-  document.getElementById("listaRegistros").innerHTML =
+  document.getElementById(
+    "listaRegistros"
+  ).innerHTML =
   localStorage.getItem("registros") || "";
 
-  document.getElementById("listaArticulos").innerHTML =
+  document.getElementById(
+    "listaArticulos"
+  ).innerHTML =
   localStorage.getItem("articulos") || "";
 
-  document.getElementById("listaDiagramas").innerHTML =
+  document.getElementById(
+    "listaDiagramas"
+  ).innerHTML =
   localStorage.getItem("diagramas") || "";
 
-  document.getElementById("listaTutoriales").innerHTML =
+  document.getElementById(
+    "listaTutoriales"
+  ).innerHTML =
   localStorage.getItem("tutoriales") || "";
 
-  const datosMantenimiento =
-  localStorage.getItem("mantenimiento");
-
-  if(datosMantenimiento){
-
-    mantenimiento =
-    JSON.parse(datosMantenimiento);
-
-    actualizarMantenimiento();
-  }
 }
 
-// MOSTRAR SECCIONES
-function mostrarSeccion(id){
+cargarLocal();
 
-  const secciones =
-  document.querySelectorAll(".seccion");
 
-  secciones.forEach(sec => {
+// =======================
+// MANTENIMIENTO
+// =======================
 
-    sec.classList.remove("activa");
+let mantenimiento = {
 
-  });
+  registros:false,
+  articulos:false,
+  diagramas:false,
+  tutoriales:false
 
-  document
-  .getElementById(id)
-  .classList.add("activa");
-}
+};
 
-// LOGIN
-function mostrarLogin(){
+function modoMantenimiento(){
 
-  document
-  .getElementById("login")
-  .classList.remove("oculto");
-}
+  const seccion =
+  prompt(
+"¿Qué sección?\nregistros\narticulos\ndiagramas\ntutoriales"
+  );
 
-// CERRAR LOGIN
-function cerrarLogin(){
+  if(!mantenimiento.hasOwnProperty(seccion)){
 
-  document
-  .getElementById("login")
-  .classList.add("oculto");
-}
-
-// ENTRAR
-function entrar(){
-
-  const tipo =
-  document.getElementById("tipoUsuario").value;
-
-  const pass =
-  document.getElementById("password").value;
-
-  // VISITANTE
-  if(tipo === "visitante"){
-
-    usuarioActual = "visitante";
-
-    cerrarLogin();
-
+    alert("Sección inválida");
     return;
-  }
-
-  // REGISTRADOR
-  if(tipo === "registro"){
-
-    if(pass === "lavanda123"){
-
-      usuarioActual = "registro";
-
-      document
-      .getElementById("btnPanel")
-      .classList.remove("oculto");
-
-      mostrarSeccion("panelRegistro");
-
-      cerrarLogin();
-
-    }else{
-
-      alert("Contraseña incorrecta");
-    }
 
   }
 
-  // ADMIN
-  if(tipo === "admin"){
+  mantenimiento[seccion] =
+  !mantenimiento[seccion];
 
-    if(pass === "admin123"){
+  actualizarMantenimiento();
 
-      usuarioActual = "admin";
+}
 
-      document
-      .getElementById("btnPanel")
-      .classList.remove("oculto");
+function actualizarMantenimiento(){
 
-      document
-      .getElementById("adminPanel")
-      .classList.remove("oculto");
+  for(let sec in mantenimiento){
 
-      mostrarSeccion("panelRegistro");
+    const estado =
+    document.getElementById(
+      "estado" +
+      sec.charAt(0).toUpperCase() +
+      sec.slice(1)
+    );
 
-      cerrarLogin();
+    if(mantenimiento[sec]){
+
+      estado.innerHTML = `
+
+        <div class="card">
+
+        🚧 Sección en mantenimiento
+
+        </div>
+
+      `;
 
     }else{
 
-      alert("Contraseña incorrecta");
+      estado.innerHTML = "";
+
     }
 
   }
 
 }
 
-// CREAR REGISTRO
-function crearRegistro(){
 
-  if(mantenimiento.registros){
+// =======================
+// BORRAR COMENTARIOS
+// =======================
 
-    alert("Sección en mantenimiento");
-    return;
-  }
-
-  const alumno =
-  document.getElementById("alumno").value;
-
-  const altura =
-  document.getElementById("altura").value;
-
-  const fecha =
-  document.getElementById("fecha").value;
-
-  const imagen =
-  document.getElementById("imagenRegistro").files[0];
-
-  const lector = new FileReader();
-
-  lector.onload = function(e){
-
-    const html = `
-
-      <div class="card">
-
-        <h2>${alumno}</h2>
-
-        <p>🌱 Altura: ${altura} cm</p>
-
-        <p>📅 Fecha: ${fecha}</p>
-
-        <img src="${e.target.result}">
-
-        ${
-        usuarioActual === "admin"
-        ? `<button onclick="eliminarPublicacion(this)">
-        🗑 Eliminar
-        </button>`
-        : ""
-        }
-
-        <div class="comentarios">
-
-          <input
-          type="text"
-          placeholder="Comentario"
-          onkeypress="agregarComentario(event,this)">
-
-          <div class="listaComentarios"></div>
-
-        </div>
-
-      </div>
-
-    `;
-
-    document
-    .getElementById("listaRegistros")
-    .innerHTML += html;
-
-    guardarDatos();
-  }
-
-  if(imagen){
-
-    lector.readAsDataURL(imagen);
-  }
-
-}
-
-// CREAR ARTICULO
-function crearArticulo(){
-
-  if(mantenimiento.articulos){
-
-    alert("Sección en mantenimiento");
-    return;
-  }
-
-  const titulo =
-  document.getElementById("tituloArticulo").value;
-
-  const contenido =
-  document.getElementById("contenidoArticulo").value;
-
-  const imagen =
-  document.getElementById("imagenArticulo").files[0];
-
-  const lector = new FileReader();
-
-  lector.onload = function(e){
-
-    const html = `
-
-      <div class="card">
-
-        <h2>${titulo}</h2>
-
-        <p>${contenido}</p>
-
-        <img src="${e.target.result}">
-
-        ${
-        usuarioActual === "admin"
-        ? `<button onclick="eliminarPublicacion(this)">
-        🗑 Eliminar
-        </button>`
-        : ""
-        }
-
-        <div class="comentarios">
-
-          <input
-          type="text"
-          placeholder="Comentario"
-          onkeypress="agregarComentario(event,this)">
-
-          <div class="listaComentarios"></div>
-
-        </div>
-
-      </div>
-
-    `;
-
-    document
-    .getElementById("listaArticulos")
-    .innerHTML += html;
-
-    guardarDatos();
-  }
-
-  if(imagen){
-
-    lector.readAsDataURL(imagen);
-  }
-
-}
-
-// CREAR DIAGRAMA
-function crearDiagrama(){
-
-  if(mantenimiento.diagramas){
-
-    alert("Sección en mantenimiento");
-    return;
-  }
-
-  const titulo =
-  document.getElementById("tituloDiagrama").value;
-
-  const imagen =
-  document.getElementById("imagenDiagrama").files[0];
-
-  const lector = new FileReader();
-
-  lector.onload = function(e){
-
-    const html = `
-
-      <div class="card">
-
-        <h2>${titulo}</h2>
-
-        <img src="${e.target.result}">
-
-        ${
-        usuarioActual === "admin"
-        ? `<button onclick="eliminarPublicacion(this)">
-        🗑 Eliminar
-        </button>`
-        : ""
-        }
-
-        <div class="comentarios">
-
-          <input
-          type="text"
-          placeholder="Comentario"
-          onkeypress="agregarComentario(event,this)">
-
-          <div class="listaComentarios"></div>
-
-        </div>
-
-      </div>
-
-    `;
-
-    document
-    .getElementById("listaDiagramas")
-    .innerHTML += html;
-
-    guardarDatos();
-  }
-
-  if(imagen){
-
-    lector.readAsDataURL(imagen);
-  }
-
-}
-
-// CREAR TUTORIAL
-function crearTutorial(){
-
-  if(mantenimiento.tutoriales){
-
-    alert("Sección en mantenimiento");
-    return;
-  }
-
-  const titulo =
-  document.getElementById("tituloTutorial").value;
-
-  const link =
-  document.getElementById("linkTutorial").value;
-
-  const html = `
-
-    <div class="card">
-
-      <h2>${titulo}</h2>
-
-      <a href="${link}" target="_blank">
-      Ver Tutorial
-      </a>
-
-      ${
-      usuarioActual === "admin"
-      ? `<button onclick="eliminarPublicacion(this)">
-      🗑 Eliminar
-      </button>`
-      : ""
-      }
-
-      <div class="comentarios">
-
-        <input
-        type="text"
-        placeholder="Comentario"
-        onkeypress="agregarComentario(event,this)">
-
-        <div class="listaComentarios"></div>
-
-      </div>
-
-    </div>
-
-  `;
-
-  document
-  .getElementById("listaTutoriales")
-  .innerHTML += html;
-
-  guardarDatos();
-}
-
-// AGREGAR COMENTARIO
 function agregarComentario(event,input){
 
   if(event.key === "Enter"){
@@ -451,13 +222,11 @@ function agregarComentario(event,input){
 
         👤 ${texto}
 
-        ${
-        usuarioActual === "admin"
-        ? `<button onclick="eliminarComentario(this)">
+        <button onclick="this.parentElement.remove();guardarLocal()">
+
         ❌
-        </button>`
-        : ""
-        }
+
+        </button>
 
       </div>
 
@@ -465,88 +234,69 @@ function agregarComentario(event,input){
 
     input.value = "";
 
-    guardarDatos();
+    guardarLocal();
+
   }
 
 }
 
-// ELIMINAR COMENTARIO
-function eliminarComentario(btn){
 
-  btn.parentElement.remove();
+// =======================
+// GUARDAR AUTOMATICO
+// =======================
 
-  guardarDatos();
-}
+const viejoRegistro = crearRegistro;
 
-// ELIMINAR PUBLICACION
-function eliminarPublicacion(btn){
+crearRegistro = function(){
 
-  btn.parentElement.remove();
+  viejoRegistro();
 
-  guardarDatos();
-}
+  setTimeout(() => {
 
-// CAMBIAR COLOR
-function cambiarColor(){
+    guardarLocal();
 
-  const color =
-  prompt("Escribe un color");
+  }, 500);
 
-  document.body.style.background = color;
-}
+};
 
-// ACTIVAR/DESACTIVAR MANTENIMIENTO
-function modoMantenimiento(){
+const viejoArticulo = crearArticulo;
 
-  const seccion =
-  prompt(
-`Escribe:
+crearArticulo = function(){
 
-registros
-articulos
-diagramas
-tutoriales`
-  );
+  viejoArticulo();
 
-  if(!mantenimiento.hasOwnProperty(seccion)){
+  setTimeout(() => {
 
-    alert("Sección inválida");
-    return;
-  }
+    guardarLocal();
 
-  mantenimiento[seccion] =
-  !mantenimiento[seccion];
+  }, 500);
 
-  actualizarMantenimiento();
+};
 
-  guardarDatos();
-}
+const viejoDiagrama = crearDiagrama;
 
-// ACTUALIZAR MANTENIMIENTO
-function actualizarMantenimiento(){
+crearDiagrama = function(){
 
-  for(let seccion in mantenimiento){
+  viejoDiagrama();
 
-    const contenedor = document
-    .getElementById(
-      "lista" +
-      seccion.charAt(0).toUpperCase() +
-      seccion.slice(1)
-    );
+  setTimeout(() => {
 
-    if(!contenedor) continue;
+    guardarLocal();
 
-    if(mantenimiento[seccion]){
+  }, 500);
 
-      contenedor.innerHTML = `
+};
 
-        <div class="card">
+const viejoTutorial = crearTutorial;
 
-          <h1>🚧 En mantenimiento</h1>
+crearTutorial = function(){
 
-        </div>
+  viejoTutorial();
 
-      `;
-    }
-  }
-}
+  setTimeout(() => {
+
+    guardarLocal();
+
+  }, 500);
+
+};
