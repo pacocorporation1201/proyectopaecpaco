@@ -1,5 +1,75 @@
 let usuarioActual = "visitante";
 
+let mantenimiento = {
+  registros:false,
+  articulos:false,
+  diagramas:false,
+  tutoriales:false
+};
+
+// CARGAR DATOS AL INICIAR
+window.onload = function(){
+
+  cargarDatos();
+
+}
+
+// GUARDAR EN LOCALSTORAGE
+function guardarDatos(){
+
+  localStorage.setItem(
+    "registros",
+    document.getElementById("listaRegistros").innerHTML
+  );
+
+  localStorage.setItem(
+    "articulos",
+    document.getElementById("listaArticulos").innerHTML
+  );
+
+  localStorage.setItem(
+    "diagramas",
+    document.getElementById("listaDiagramas").innerHTML
+  );
+
+  localStorage.setItem(
+    "tutoriales",
+    document.getElementById("listaTutoriales").innerHTML
+  );
+
+  localStorage.setItem(
+    "mantenimiento",
+    JSON.stringify(mantenimiento)
+  );
+}
+
+// CARGAR DATOS
+function cargarDatos(){
+
+  document.getElementById("listaRegistros").innerHTML =
+  localStorage.getItem("registros") || "";
+
+  document.getElementById("listaArticulos").innerHTML =
+  localStorage.getItem("articulos") || "";
+
+  document.getElementById("listaDiagramas").innerHTML =
+  localStorage.getItem("diagramas") || "";
+
+  document.getElementById("listaTutoriales").innerHTML =
+  localStorage.getItem("tutoriales") || "";
+
+  const datosMantenimiento =
+  localStorage.getItem("mantenimiento");
+
+  if(datosMantenimiento){
+
+    mantenimiento =
+    JSON.parse(datosMantenimiento);
+
+    actualizarMantenimiento();
+  }
+}
+
 // MOSTRAR SECCIONES
 function mostrarSeccion(id){
 
@@ -47,8 +117,6 @@ function entrar(){
 
     usuarioActual = "visitante";
 
-    alert("Entraste como visitante");
-
     cerrarLogin();
 
     return;
@@ -64,8 +132,6 @@ function entrar(){
       document
       .getElementById("btnPanel")
       .classList.remove("oculto");
-
-      alert("Bienvenido registrador");
 
       mostrarSeccion("panelRegistro");
 
@@ -93,8 +159,6 @@ function entrar(){
       .getElementById("adminPanel")
       .classList.remove("oculto");
 
-      alert("Bienvenido administrador");
-
       mostrarSeccion("panelRegistro");
 
       cerrarLogin();
@@ -110,6 +174,12 @@ function entrar(){
 
 // CREAR REGISTRO
 function crearRegistro(){
+
+  if(mantenimiento.registros){
+
+    alert("Sección en mantenimiento");
+    return;
+  }
 
   const alumno =
   document.getElementById("alumno").value;
@@ -151,7 +221,7 @@ function crearRegistro(){
 
           <input
           type="text"
-          placeholder="Escribe un comentario"
+          placeholder="Comentario"
           onkeypress="agregarComentario(event,this)">
 
           <div class="listaComentarios"></div>
@@ -165,6 +235,8 @@ function crearRegistro(){
     document
     .getElementById("listaRegistros")
     .innerHTML += html;
+
+    guardarDatos();
   }
 
   if(imagen){
@@ -176,6 +248,12 @@ function crearRegistro(){
 
 // CREAR ARTICULO
 function crearArticulo(){
+
+  if(mantenimiento.articulos){
+
+    alert("Sección en mantenimiento");
+    return;
+  }
 
   const titulo =
   document.getElementById("tituloArticulo").value;
@@ -212,7 +290,7 @@ function crearArticulo(){
 
           <input
           type="text"
-          placeholder="Escribe un comentario"
+          placeholder="Comentario"
           onkeypress="agregarComentario(event,this)">
 
           <div class="listaComentarios"></div>
@@ -226,6 +304,8 @@ function crearArticulo(){
     document
     .getElementById("listaArticulos")
     .innerHTML += html;
+
+    guardarDatos();
   }
 
   if(imagen){
@@ -237,6 +317,12 @@ function crearArticulo(){
 
 // CREAR DIAGRAMA
 function crearDiagrama(){
+
+  if(mantenimiento.diagramas){
+
+    alert("Sección en mantenimiento");
+    return;
+  }
 
   const titulo =
   document.getElementById("tituloDiagrama").value;
@@ -268,7 +354,7 @@ function crearDiagrama(){
 
           <input
           type="text"
-          placeholder="Escribe un comentario"
+          placeholder="Comentario"
           onkeypress="agregarComentario(event,this)">
 
           <div class="listaComentarios"></div>
@@ -282,6 +368,8 @@ function crearDiagrama(){
     document
     .getElementById("listaDiagramas")
     .innerHTML += html;
+
+    guardarDatos();
   }
 
   if(imagen){
@@ -293,6 +381,12 @@ function crearDiagrama(){
 
 // CREAR TUTORIAL
 function crearTutorial(){
+
+  if(mantenimiento.tutoriales){
+
+    alert("Sección en mantenimiento");
+    return;
+  }
 
   const titulo =
   document.getElementById("tituloTutorial").value;
@@ -307,9 +401,7 @@ function crearTutorial(){
       <h2>${titulo}</h2>
 
       <a href="${link}" target="_blank">
-
-        Ver Tutorial
-
+      Ver Tutorial
       </a>
 
       ${
@@ -324,7 +416,7 @@ function crearTutorial(){
 
         <input
         type="text"
-        placeholder="Escribe un comentario"
+        placeholder="Comentario"
         onkeypress="agregarComentario(event,this)">
 
         <div class="listaComentarios"></div>
@@ -338,9 +430,11 @@ function crearTutorial(){
   document
   .getElementById("listaTutoriales")
   .innerHTML += html;
+
+  guardarDatos();
 }
 
-// COMENTARIOS
+// AGREGAR COMENTARIO
 function agregarComentario(event,input){
 
   if(event.key === "Enter"){
@@ -357,13 +451,39 @@ function agregarComentario(event,input){
 
         👤 ${texto}
 
+        ${
+        usuarioActual === "admin"
+        ? `<button onclick="eliminarComentario(this)">
+        ❌
+        </button>`
+        : ""
+        }
+
       </div>
 
     `;
 
     input.value = "";
+
+    guardarDatos();
   }
 
+}
+
+// ELIMINAR COMENTARIO
+function eliminarComentario(btn){
+
+  btn.parentElement.remove();
+
+  guardarDatos();
+}
+
+// ELIMINAR PUBLICACION
+function eliminarPublicacion(btn){
+
+  btn.parentElement.remove();
+
+  guardarDatos();
 }
 
 // CAMBIAR COLOR
@@ -375,35 +495,58 @@ function cambiarColor(){
   document.body.style.background = color;
 }
 
-// MODO MANTENIMIENTO
+// ACTIVAR/DESACTIVAR MANTENIMIENTO
 function modoMantenimiento(){
 
-  const secciones = [
+  const seccion =
+  prompt(
+`Escribe:
 
-    "registros",
-    "articulos",
-    "diagramas",
-    "tutoriales"
+registros
+articulos
+diagramas
+tutoriales`
+  );
 
-  ];
+  if(!mantenimiento.hasOwnProperty(seccion)){
 
-  secciones.forEach(id => {
+    alert("Sección inválida");
+    return;
+  }
 
-    document.getElementById(id).innerHTML = `
+  mantenimiento[seccion] =
+  !mantenimiento[seccion];
 
-      <div class="card">
+  actualizarMantenimiento();
 
-        <h1>🚧 En mantenimiento</h1>
-
-      </div>
-
-    `;
-  });
-
+  guardarDatos();
 }
 
-// ELIMINAR PUBLICACION
-function eliminarPublicacion(btn){
+// ACTUALIZAR MANTENIMIENTO
+function actualizarMantenimiento(){
 
-  btn.parentElement.remove();
+  for(let seccion in mantenimiento){
+
+    const contenedor = document
+    .getElementById(
+      "lista" +
+      seccion.charAt(0).toUpperCase() +
+      seccion.slice(1)
+    );
+
+    if(!contenedor) continue;
+
+    if(mantenimiento[seccion]){
+
+      contenedor.innerHTML = `
+
+        <div class="card">
+
+          <h1>🚧 En mantenimiento</h1>
+
+        </div>
+
+      `;
+    }
+  }
 }

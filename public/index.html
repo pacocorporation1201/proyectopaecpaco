@@ -1,245 +1,301 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Lavanda App</title>
+<title>Lavanda App</title>
 
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 
 </head>
+
 <body>
 
 <!-- MENU -->
 <div class="sidebar">
 
-  <h2>🌱 Lavanda</h2>
+<h2>🌱 Lavanda</h2>
 
-  <button onclick="mostrarSeccion('inicio')">
-    🏠 Inicio
-  </button>
+<button onclick="mostrarSeccion('inicio')">
+🏠 Inicio
+</button>
 
-  <button onclick="mostrarSeccion('registros')">
-    🌱 Registros
-  </button>
+<button onclick="mostrarSeccion('registros')">
+🌱 Registros
+</button>
 
-  <button onclick="mostrarSeccion('articulos')">
-    📰 Artículos
-  </button>
+<button onclick="mostrarSeccion('articulos')">
+📰 Artículos
+</button>
 
-  <button onclick="mostrarSeccion('diagramas')">
-    📊 Diagramas
-  </button>
+<button onclick="mostrarSeccion('diagramas')">
+📊 Diagramas
+</button>
 
-  <button onclick="mostrarSeccion('tutoriales')">
-    🎥 Tutoriales
-  </button>
+<button onclick="mostrarSeccion('tutoriales')">
+🎥 Tutoriales
+</button>
 
-  <button onclick="mostrarLogin()">
-    🔐 Entrar
-  </button>
+<button onclick="mostrarLogin()">
+🔐 Entrar
+</button>
 
-  <button id="btnPanel"
-  class="oculto"
-  onclick="mostrarSeccion('panelRegistro')">
+<button
+id="btnPanel"
+class="oculto"
+onclick="mostrarSeccion('panelRegistro')">
 
-    ⚙ Panel
+⚙ Panel
 
-  </button>
+</button>
 
 </div>
 
 <!-- CONTENIDO -->
 <div class="contenido">
 
-  <!-- INICIO -->
-  <section id="inicio" class="seccion activa">
+<!-- INICIO -->
+<section
+id="inicio"
+class="seccion activa">
 
-    <h1>🌱 ¿Qué es la Lavanda?</h1>
+<h1>🌱 ¿Qué es la Lavanda?</h1>
 
-    <p>
-      La lavanda es una planta aromática
-      conocida por sus propiedades relajantes.
-    </p>
+<p>
 
-    <img
-    class="imagenInicio"
-    src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1200">
+La lavanda es una planta aromática
+utilizada para relajación,
+perfumes y remedios naturales.
 
-  </section>
+</p>
 
-  <!-- PANEL -->
-  <section id="panelRegistro" class="seccion">
+<img
+class="imagenInicio"
+src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1200">
 
-    <h1>✍ Panel</h1>
+</section>
 
-    <!-- PANEL ADMIN -->
-    <div id="adminPanel" class="oculto">
+<!-- PANEL -->
+<section
+id="panelRegistro"
+class="seccion">
 
-      <div class="card">
+<h1>⚙ Panel</h1>
 
-        <h2>🛠 Panel Administrador</h2>
+<!-- ADMIN -->
+<div
+id="adminPanel"
+class="oculto">
 
-        <button onclick="cambiarColor()">
-          🎨 Cambiar Color
-        </button>
+<div class="card">
 
-        <button onclick="modoMantenimiento()">
-          🚧 Mantenimiento
-        </button>
+<h2>🛠 Panel Administrador</h2>
 
-      </div>
+<button onclick="cambiarColor()">
+🎨 Cambiar Color
+</button>
 
-    </div>
+<button onclick="modoMantenimiento()">
+🚧 Activar / Desactivar mantenimiento
+</button>
 
-    <!-- REGISTRO -->
-    <div class="card">
+</div>
 
-      <h2>🌱 Nuevo Registro</h2>
+</div>
 
-      <input type="text" id="alumno" placeholder="Nombre">
+<!-- REGISTRO -->
+<div class="card">
 
-      <input type="number" id="altura" placeholder="Altura">
+<h2>🌱 Nuevo Registro</h2>
 
-      <input type="date" id="fecha">
+<input
+type="text"
+id="alumno"
+placeholder="Nombre">
 
-      <input type="file" id="imagenRegistro">
+<input
+type="number"
+id="altura"
+placeholder="Altura">
 
-      <button onclick="crearRegistro()">
-        Guardar Registro
-      </button>
+<input
+type="date"
+id="fecha">
 
-    </div>
+<input
+type="file"
+id="imagenRegistro">
 
-    <!-- ARTICULOS -->
-    <div class="card">
+<button onclick="crearRegistro()">
+Guardar Registro
+</button>
 
-      <h2>📰 Crear Artículo</h2>
+</div>
 
-      <input type="text" id="tituloArticulo" placeholder="Título">
+<!-- ARTICULOS -->
+<div class="card">
 
-      <textarea
-      id="contenidoArticulo"
-      rows="5"
-      placeholder="Contenido"></textarea>
+<h2>📰 Crear Artículo</h2>
 
-      <input type="file" id="imagenArticulo">
+<input
+type="text"
+id="tituloArticulo"
+placeholder="Título">
 
-      <button onclick="crearArticulo()">
-        Publicar Artículo
-      </button>
+<textarea
+id="contenidoArticulo"
+rows="5"
+placeholder="Contenido"></textarea>
 
-    </div>
+<input
+type="file"
+id="imagenArticulo">
 
-    <!-- DIAGRAMAS -->
-    <div class="card">
+<button onclick="crearArticulo()">
+Publicar Artículo
+</button>
 
-      <h2>📊 Crear Diagrama</h2>
+</div>
 
-      <input type="text" id="tituloDiagrama" placeholder="Título">
+<!-- DIAGRAMAS -->
+<div class="card">
 
-      <input type="file" id="imagenDiagrama">
+<h2>📊 Crear Diagrama</h2>
 
-      <button onclick="crearDiagrama()">
-        Publicar Diagrama
-      </button>
+<input
+type="text"
+id="tituloDiagrama"
+placeholder="Título">
 
-    </div>
+<input
+type="file"
+id="imagenDiagrama">
 
-    <!-- TUTORIALES -->
-    <div class="card">
+<button onclick="crearDiagrama()">
+Publicar Diagrama
+</button>
 
-      <h2>🎥 Crear Tutorial</h2>
+</div>
 
-      <input type="text" id="tituloTutorial" placeholder="Título">
+<!-- TUTORIALES -->
+<div class="card">
 
-      <input type="text" id="linkTutorial" placeholder="Link YouTube">
+<h2>🎥 Crear Tutorial</h2>
 
-      <button onclick="crearTutorial()">
-        Publicar Tutorial
-      </button>
+<input
+type="text"
+id="tituloTutorial"
+placeholder="Título">
 
-    </div>
+<input
+type="text"
+id="linkTutorial"
+placeholder="Link YouTube">
 
-  </section>
+<button onclick="crearTutorial()">
+Publicar Tutorial
+</button>
 
-  <!-- REGISTROS -->
-  <section id="registros" class="seccion">
+</div>
 
-    <h1>🌱 Registros</h1>
+</section>
 
-    <div id="listaRegistros"></div>
+<!-- REGISTROS -->
+<section
+id="registros"
+class="seccion">
 
-  </section>
+<h1>🌱 Registros</h1>
 
-  <!-- ARTICULOS -->
-  <section id="articulos" class="seccion">
+<div id="estadoRegistros"></div>
 
-    <h1>📰 Artículos</h1>
+<div id="listaRegistros"></div>
 
-    <div id="listaArticulos"></div>
+</section>
 
-  </section>
+<!-- ARTICULOS -->
+<section
+id="articulos"
+class="seccion">
 
-  <!-- DIAGRAMAS -->
-  <section id="diagramas" class="seccion">
+<h1>📰 Artículos</h1>
 
-    <h1>📊 Diagramas</h1>
+<div id="estadoArticulos"></div>
 
-    <div id="listaDiagramas"></div>
+<div id="listaArticulos"></div>
 
-  </section>
+</section>
 
-  <!-- TUTORIALES -->
-  <section id="tutoriales" class="seccion">
+<!-- DIAGRAMAS -->
+<section
+id="diagramas"
+class="seccion">
 
-    <h1>🎥 Tutoriales</h1>
+<h1>📊 Diagramas</h1>
 
-    <div id="listaTutoriales"></div>
+<div id="estadoDiagramas"></div>
 
-  </section>
+<div id="listaDiagramas"></div>
+
+</section>
+
+<!-- TUTORIALES -->
+<section
+id="tutoriales"
+class="seccion">
+
+<h1>🎥 Tutoriales</h1>
+
+<div id="estadoTutoriales"></div>
+
+<div id="listaTutoriales"></div>
+
+</section>
 
 </div>
 
 <!-- LOGIN -->
-<div class="login oculto" id="login">
+<div
+class="login oculto"
+id="login">
 
-  <div class="login-box">
+<div class="login-box">
 
-    <h2>🔐 Login</h2>
+<h2>🔐 Login</h2>
 
-    <select id="tipoUsuario">
+<select id="tipoUsuario">
 
-      <option value="visitante">
-        Visitante
-      </option>
+<option value="visitante">
+Visitante
+</option>
 
-      <option value="registro">
-        Registrador
-      </option>
+<option value="registro">
+Registrador
+</option>
 
-      <option value="admin">
-        Administrador
-      </option>
+<option value="admin">
+Administrador
+</option>
 
-    </select>
+</select>
 
-    <input
-    type="password"
-    id="password"
-    placeholder="Contraseña">
+<input
+type="password"
+id="password"
+placeholder="Contraseña">
 
-    <button onclick="entrar()">
-      Entrar
-    </button>
+<button onclick="entrar()">
+Entrar
+</button>
 
-    <button onclick="cerrarLogin()">
-      Cancelar
-    </button>
+<button onclick="cerrarLogin()">
+Cancelar
+</button>
 
-  </div>
+</div>
 
 </div>
 
