@@ -1,390 +1,183 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Lavanda App</title>
-
-<link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lavanda App</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<!-- MENU -->
-<div class="sidebar">
-
-<h2>🌱 Lavanda</h2>
-
-<button onclick="mostrarSeccion('inicio')">
-🏠 Inicio
-</button>
-
-<button onclick="mostrarSeccion('registros')">
-🌱 Registros
-</button>
-
-<button onclick="mostrarSeccion('articulos')">
-📰 Artículos
-</button>
-
-<button onclick="mostrarSeccion('diagramas')">
-📊 Diagramas
-</button>
-
-<button onclick="mostrarSeccion('tutoriales')">
-🎥 Tutoriales
-</button>
-
-<button onclick="mostrarLogin()">
-🔐 Entrar
-</button>
-
-<button
-id="btnPanel"
-class="oculto"
-onclick="mostrarSeccion('panelRegistro')">
-
-⚙ Panel
-
-</button>
-
-</div>
-
-<!-- CONTENIDO -->
-<div class="contenido">
-
-<!-- INICIO -->
-<section
-id="inicio"
-class="seccion activa hero">
-
-<div class="hero-contenido">
-
-<div class="hero-texto">
-
-<h1 class="tituloHero">
-🌱 Sistema Inteligente de Lavanda
-</h1>
-
-<p class="textoHero">
-
-La lavanda es una planta aromática
-muy utilizada en medicina natural,
-perfumes y relajación.
-
-Ayuda a reducir el estrés,
-mejorar el sueño y crear
-aceites esenciales naturales.
-
-</p>
-
-<div class="hero-botones">
-
-<button onclick="mostrarSeccion('articulos')">
-📰 Ver Artículos
-</button>
-
-<button onclick="mostrarSeccion('registros')">
-🌱 Ver Registros
-</button>
-
-</div>
-
-</div>
-
-<div class="hero-imagen">
-
-<img
-src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1200">
-
-</div>
-
-</div>
-
-<!-- BENEFICIOS -->
-<div class="cardsInicio">
-
-<div class="inicioCard">
-
-<h2>🌿 Relajación</h2>
-
-<p>
-
-La lavanda ayuda a disminuir
-el estrés y la ansiedad.
-
-</p>
-
-</div>
-
-<div class="inicioCard">
-
-<h2>💤 Sueño</h2>
-
-<p>
-
-Ayuda a mejorar el descanso
-y la calidad del sueño.
-
-</p>
-
-</div>
-
-<div class="inicioCard">
-
-<h2>🧴 Aceites</h2>
-
-<p>
-
-Se usa para crear perfumes
-y aceites esenciales.
-
-</p>
-
-</div>
-
-</div>
-
-<!-- CLIMA -->
-<div class="card climaCard">
-
-<h1>🌤 Clima en tiempo real</h1>
-
-<div id="clima">
-
-<p>Cargando clima...</p>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- PANEL -->
-<section
-id="panelRegistro"
-class="seccion">
-
-<h1>⚙ Panel</h1>
-
-<!-- ADMIN -->
-<div
-id="adminPanel"
-class="oculto">
-
-<div class="card">
-
-<h2>🛠 Panel Administrador</h2>
-
-<button onclick="cambiarColor()">
-🎨 Cambiar Color
-</button>
-
-<button onclick="modoMantenimiento()">
-🚧 Mantenimiento
-</button>
-
-</div>
-
-</div>
-
-<!-- REGISTRO -->
-<div class="card">
-
-<h2>🌱 Nuevo Registro</h2>
-
-<input
-type="text"
-id="alumno"
-placeholder="Nombre">
-
-<input
-type="number"
-id="altura"
-placeholder="Altura">
-
-<input
-type="date"
-id="fecha">
-
-<input
-type="file"
-id="imagenRegistro">
-
-<button onclick="crearRegistro()">
-Guardar Registro
-</button>
-
-</div>
-
-<!-- ARTICULOS -->
-<div class="card">
-
-<h2>📰 Crear Artículo</h2>
-
-<input
-type="text"
-id="tituloArticulo"
-placeholder="Título">
-
-<textarea
-id="contenidoArticulo"
-rows="5"
-placeholder="Contenido"></textarea>
-
-<input
-type="file"
-id="imagenArticulo">
-
-<button onclick="crearArticulo()">
-Publicar Artículo
-</button>
-
-</div>
-
-<!-- DIAGRAMAS -->
-<div class="card">
-
-<h2>📊 Crear Diagrama</h2>
-
-<input
-type="text"
-id="tituloDiagrama"
-placeholder="Título">
-
-<input
-type="file"
-id="imagenDiagrama">
-
-<button onclick="crearDiagrama()">
-Publicar Diagrama
-</button>
-
-</div>
-
-<!-- TUTORIALES -->
-<div class="card">
-
-<h2>🎥 Crear Tutorial</h2>
-
-<input
-type="text"
-id="tituloTutorial"
-placeholder="Título">
-
-<input
-type="text"
-id="linkTutorial"
-placeholder="Link YouTube">
-
-<button onclick="crearTutorial()">
-Publicar Tutorial
-</button>
-
-</div>
-
-</section>
-
-<!-- REGISTROS -->
-<section
-id="registros"
-class="seccion">
-
-<h1>🌱 Registros</h1>
-
-<div id="estadoRegistros"></div>
-
-<div id="listaRegistros"></div>
-
-</section>
-
-<!-- ARTICULOS -->
-<section
-id="articulos"
-class="seccion">
-
-<h1>📰 Artículos</h1>
-
-<div id="estadoArticulos"></div>
-
-<div id="listaArticulos"></div>
-
-</section>
-
-<!-- DIAGRAMAS -->
-<section
-id="diagramas"
-class="seccion">
-
-<h1>📊 Diagramas</h1>
-
-<div id="estadoDiagramas"></div>
-
-<div id="listaDiagramas"></div>
-
-</section>
-
-<!-- TUTORIALES -->
-<section
-id="tutoriales"
-class="seccion">
-
-<h1>🎥 Tutoriales</h1>
-
-<div id="estadoTutoriales"></div>
-
-<div id="listaTutoriales"></div>
-
-</section>
-
-</div>
-
-<!-- LOGIN -->
-<div
-class="login oculto"
-id="login">
-
-<div class="login-box">
-
-<h2>🔐 Login</h2>
-
-<select id="tipoUsuario">
-
-<option value="visitante">
-Visitante
-</option>
-
-<option value="registro">
-Registrador
-</option>
-
-<option value="admin">
-Administrador
-</option>
-
-</select>
-
-<input
-type="password"
-id="password"
-placeholder="Contraseña">
-
-<button onclick="entrar()">
-Entrar
-</button>
-
-<button onclick="cerrarLogin()">
-Cancelar
-</button>
-
-</div>
-
-</div>
-
-<script src="app.js"></script>
-
+    <div class="sidebar">
+        <h2>🌱 Lavanda</h2>
+        <button type="button" onclick="mostrarSeccion('inicio')">🏠 Inicio</button>
+        <button type="button" onclick="mostrarSeccion('registros')">🌱 Registros</button>
+        <button type="button" onclick="mostrarSeccion('articulos')">📰 Artículos</button>
+        <button type="button" onclick="mostrarSeccion('diagramas')">📊 Diagramas</button>
+        <button type="button" onclick="mostrarSeccion('tutoriales')">🎥 Tutoriales</button>
+        <button type="button" onclick="mostrarLogin()">🔐 Entrar</button>
+        <button type="button" id="btnPanel" class="oculto" onclick="mostrarSeccion('panelRegistro')">⚙ Panel</button>
+    </div>
+
+    <div class="contenido">
+
+        <section id="inicio" class="seccion activa hero">
+            <div class="hero-contenido">
+                <div class="hero-texto">
+                    <h1 class="tituloHero">🌱 Sistema Inteligente de Lavanda</h1>
+                    <p class="textoHero">
+                        La lavanda es una planta aromática muy utilizada en medicina natural, perfumes y relajación.
+                        Ayuda a reducir el estrés, mejorar el sueño y crear aceites esenciales naturales.
+                    </p>
+                    <div class="hero-botones">
+                        <button type="button" onclick="mostrarSeccion('articulos')">📰 Ver Artículos</button>
+                        <button type="button" onclick="mostrarSeccion('registros')">🌱 Ver Registros</button>
+                    </div>
+                </div>
+                <div class="hero-imagen">
+                    <img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1200" alt="Campo de lavanda al atardecer">
+                </div>
+            </div>
+
+            <div class="cardsInicio">
+                <div class="inicioCard">
+                    <h2>🌿 Relajación</h2>
+                    <p>La lavanda ayuda a disminuir el estrés y la ansiedad.</p>
+                </div>
+                <div class="inicioCard">
+                    <h2>💤 Sueño</h2>
+                    <p>Ayuda a mejorar el descanso y la calidad del sueño.</p>
+                </div>
+                <div class="inicioCard">
+                    <h2>🧴 Aceites</h2>
+                    <p>Se usa para crear perfumes y aceites esenciales.</p>
+                </div>
+            </div>
+
+            <div class="card climaCard">
+                <h1>🌤 Clima en tiempo real</h1>
+                <div id="clima">
+                    <p>Cargando clima...</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="panelRegistro" class="seccion">
+            <h1>⚙ Panel</h1>
+
+            <div id="adminPanel" class="oculto">
+                <div class="card">
+                    <h2>🛠 Panel Administrador</h2>
+                    <button type="button" onclick="cambiarColor()">🎨 Cambiar Color</button>
+                    <button type="button" onclick="modoMantenimiento()">🚧 Mantenimiento</button>
+                </div>
+            </div>
+
+            <form class="card">
+                <h2>🌱 Nuevo Registro</h2>
+                
+                <label for="alumno">Nombre del alumno:</label>
+                <input type="text" id="alumno" placeholder="Ej. Juan Pérez" required>
+                
+                <label for="altura">Altura (cm):</label>
+                <input type="number" id="altura" placeholder="Ej. 15" required>
+                
+                <label for="fecha">Fecha:</label>
+                <input type="date" id="fecha" required>
+                
+                <label for="imagenRegistro">Imagen:</label>
+                <input type="file" id="imagenRegistro" accept="image/*">
+                
+                <button type="button" onclick="crearRegistro()">Guardar Registro</button>
+            </form>
+
+            <form class="card">
+                <h2>📰 Crear Artículo</h2>
+                
+                <label for="tituloArticulo">Título del artículo:</label>
+                <input type="text" id="tituloArticulo" placeholder="Título" required>
+                
+                <label for="contenidoArticulo">Contenido:</label>
+                <textarea id="contenidoArticulo" rows="5" placeholder="Escribe el contenido aquí..." required></textarea>
+                
+                <label for="imagenArticulo">Imagen representativa:</label>
+                <input type="file" id="imagenArticulo" accept="image/*">
+                
+                <button type="button" onclick="crearArticulo()">Publicar Artículo</button>
+            </form>
+
+            <form class="card">
+                <h2>📊 Crear Diagrama</h2>
+                
+                <label for="tituloDiagrama">Título del diagrama:</label>
+                <input type="text" id="tituloDiagrama" placeholder="Título" required>
+                
+                <label for="imagenDiagrama">Subir diagrama:</label>
+                <input type="file" id="imagenDiagrama" accept="image/*" required>
+                
+                <button type="button" onclick="crearDiagrama()">Publicar Diagrama</button>
+            </form>
+
+            <form class="card">
+                <h2>🎥 Crear Tutorial</h2>
+                
+                <label for="tituloTutorial">Título del tutorial:</label>
+                <input type="text" id="tituloTutorial" placeholder="Título" required>
+                
+                <label for="linkTutorial">Enlace de YouTube:</label>
+                <input type="url" id="linkTutorial" placeholder="https://www.youtube.com/..." required>
+                
+                <button type="button" onclick="crearTutorial()">Publicar Tutorial</button>
+            </form>
+        </section>
+
+        <section id="registros" class="seccion">
+            <h1>🌱 Registros</h1>
+            <div id="estadoRegistros"></div>
+            <div id="listaRegistros"></div>
+        </section>
+
+        <section id="articulos" class="seccion">
+            <h1>📰 Artículos</h1>
+            <div id="estadoArticulos"></div>
+            <div id="listaArticulos"></div>
+        </section>
+
+        <section id="diagramas" class="seccion">
+            <h1>📊 Diagramas</h1>
+            <div id="estadoDiagramas"></div>
+            <div id="listaDiagramas"></div>
+        </section>
+
+        <section id="tutoriales" class="seccion">
+            <h1>🎥 Tutoriales</h1>
+            <div id="estadoTutoriales"></div>
+            <div id="listaTutoriales"></div>
+        </section>
+
+    </div>
+
+    <div class="login oculto" id="login">
+        <form class="login-box">
+            <h2>🔐 Login</h2>
+            
+            <label for="tipoUsuario">Selecciona tu rol:</label>
+            <select id="tipoUsuario">
+                <option value="visitante">Visitante</option>
+                <option value="registro">Registrador</option>
+                <option value="admin">Administrador</option>
+            </select>
+            
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
+            
+            <div style="margin-top: 15px;">
+                <button type="button" onclick="entrar()">Entrar</button>
+                <button type="button" onclick="cerrarLogin()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
