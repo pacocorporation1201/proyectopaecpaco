@@ -63,19 +63,18 @@
         </section>
 
         <section id="panelRegistro" class="seccion">
-            <h1>⚙ Panel</h1>
+            <h1>⚙ Panel de Control</h1>
 
             <div id="adminPanel" class="oculto">
                 <div class="card">
                     <h2>🛠 Panel Administrador</h2>
-                    <button type="button" onclick="cambiarColor()">🎨 Cambiar Color</button>
-                    <button type="button" onclick="modoMantenimiento()">🚧 Mantenimiento</button>
+                    <button type="button" onclick="cambiarColor()">🎨 Cambiar Color Aleatorio</button>
+                    <button type="button" onclick="modoMantenimiento()">🚧 Activar/Desactivar Mantenimiento</button>
                 </div>
             </div>
 
             <form class="card">
                 <h2>🌱 Nuevo Registro</h2>
-                
                 <label for="alumno">Nombre del alumno:</label>
                 <input type="text" id="alumno" placeholder="Ej. Juan Pérez" required>
                 
@@ -85,7 +84,7 @@
                 <label for="fecha">Fecha:</label>
                 <input type="date" id="fecha" required>
                 
-                <label for="imagenRegistro">Imagen:</label>
+                <label for="imagenRegistro">Imagen de la planta:</label>
                 <input type="file" id="imagenRegistro" accept="image/*">
                 
                 <button type="button" onclick="crearRegistro()">Guardar Registro</button>
@@ -93,7 +92,6 @@
 
             <form class="card">
                 <h2>📰 Crear Artículo</h2>
-                
                 <label for="tituloArticulo">Título del artículo:</label>
                 <input type="text" id="tituloArticulo" placeholder="Título" required>
                 
@@ -108,7 +106,6 @@
 
             <form class="card">
                 <h2>📊 Crear Diagrama</h2>
-                
                 <label for="tituloDiagrama">Título del diagrama:</label>
                 <input type="text" id="tituloDiagrama" placeholder="Título" required>
                 
@@ -120,7 +117,6 @@
 
             <form class="card">
                 <h2>🎥 Crear Tutorial</h2>
-                
                 <label for="tituloTutorial">Título del tutorial:</label>
                 <input type="text" id="tituloTutorial" placeholder="Título" required>
                 
@@ -132,7 +128,10 @@
         </section>
 
         <section id="registros" class="seccion">
-            <h1>🌱 Registros</h1>
+            <div class="header-seccion">
+                <h1>🌱 Registros</h1>
+                <button type="button" class="btn-excel" onclick="descargarExcel()">⬇️ Descargar Excel</button>
+            </div>
             <div id="estadoRegistros"></div>
             <div id="listaRegistros"></div>
         </section>
@@ -159,7 +158,7 @@
 
     <div class="login oculto" id="login">
         <form class="login-box">
-            <h2>🔐 Login</h2>
+            <h2>🔐 Iniciar Sesión</h2>
             
             <label for="tipoUsuario">Selecciona tu rol:</label>
             <select id="tipoUsuario">
@@ -173,7 +172,7 @@
             
             <div style="margin-top: 15px;">
                 <button type="button" onclick="entrar()">Entrar</button>
-                <button type="button" onclick="cerrarLogin()">Cancelar</button>
+                <button type="button" style="background: #95a5a6;" onclick="cerrarLogin()">Cancelar</button>
             </div>
         </form>
     </div>

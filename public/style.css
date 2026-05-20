@@ -1,6 +1,15 @@
 /* =======================
-   RESET GLOBAL
+   VARIABLES Y RESET GLOBAL
 ======================= */
+:root {
+  --verde-oscuro: #1b3a2a;      
+  --verde-principal: #27ae60;   
+  --verde-claro: #eef7f1;       
+  --blanco: #ffffff;
+  --texto-principal: #2c3e50;
+  --borde-suave: #e2e8f0;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,9 +18,10 @@
 }
 
 body {
-  display: flex; /* Coloca el menú y el contenido lado a lado */
+  display: flex; 
   min-height: 100vh;
-  background-color: #f4f9f4; /* Un fondo muy suave */
+  background-color: var(--verde-claro);
+  color: var(--texto-principal);
 }
 
 /* =======================
@@ -19,34 +29,40 @@ body {
 ======================= */
 .sidebar {
   width: 250px;
-  background: linear-gradient(180deg, #081c15, #1b4332, #2d6a4f);
+  background: var(--verde-oscuro);
   padding: 20px;
   color: white;
   display: flex;
   flex-direction: column;
   gap: 15px;
+  box-shadow: 4px 0 15px rgba(0,0,0,0.05);
 }
 
 .sidebar h2 {
   text-align: center;
   margin-bottom: 20px;
+  color: var(--verde-principal);
+  font-weight: 800;
+  letter-spacing: 1px;
 }
 
 .sidebar button {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
   border: none;
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   text-align: left;
   font-size: 16px;
+  font-weight: 500;
   transition: 0.4s;
 }
 
 .sidebar button:hover {
-  transform: translateX(10px);
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--verde-principal);
+  color: var(--blanco);
+  transform: translateY(-2px);
 }
 
 .contenido {
@@ -56,24 +72,14 @@ body {
   height: 100vh;
 }
 
-.seccion {
-  display: none; /* Oculta todas las secciones por defecto */
-}
-
-.seccion.activa {
-  display: block; /* Muestra solo la activa */
-}
-
-.oculto {
-  display: none !important;
-}
+.seccion { display: none; }
+.seccion.activa { display: block; }
+.oculto { display: none !important; }
 
 /* =======================
    HERO
 ======================= */
-.hero {
-  animation: fade 1s ease;
-}
+.hero { animation: fade 1s ease; }
 
 .hero-contenido {
   display: flex;
@@ -90,7 +96,7 @@ body {
 
 .tituloHero {
   font-size: 55px;
-  color: #2d6a4f;
+  color: var(--verde-oscuro);
   margin-bottom: 20px;
   animation: slideLeft 1s ease;
 }
@@ -98,52 +104,68 @@ body {
 .textoHero {
   font-size: 18px;
   line-height: 1.8;
-  color: #444;
+  color: var(--texto-principal);
 }
 
-.hero-botones {
-  margin-top: 25px;
-}
-
-/* Botones generales de acción */
+/* =======================
+   BOTONES GENERALES
+======================= */
 button {
   cursor: pointer;
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
-  background: #2d6a4f;
+  background: var(--verde-principal);
   color: white;
   font-weight: bold;
   transition: 0.3s;
 }
 
 button:hover {
-  background: #1b4332;
+  background: var(--verde-oscuro);
 }
 
+.hero-botones { margin-top: 25px; }
 .hero-botones button {
   margin-right: 10px;
   padding: 15px 25px;
   font-size: 16px;
-  transition: 0.4s;
 }
-
 .hero-botones button:hover {
   transform: scale(1.05);
-  background: #1b4332;
 }
 
-.hero-imagen img {
-  width: 100%;
-  max-width: 500px; /* Corrección responsiva */
-  border-radius: 20px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.2);
-  animation: slideRight 1s ease;
+.btn-borrar {
+  background: #ff4757 !important; 
+  border-radius: 8px;
+  padding: 8px 15px;
+  font-size: 14px;
+}
+.btn-borrar:hover { background: #ff2a3d !important; }
+
+.btn-excel {
+  background-color: #107c41; 
+  color: white;
+  border-radius: 10px;
+  padding: 10px 20px;
+  box-shadow: 0 4px 10px rgba(16, 124, 65, 0.3);
+}
+.btn-excel:hover {
+  background-color: #0c5e31;
+  transform: translateY(-2px);
 }
 
 /* =======================
    TARJETAS Y FORMULARIOS
 ======================= */
+.hero-imagen img {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  animation: slideRight 1s ease;
+}
+
 .cardsInicio {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -151,69 +173,70 @@ button:hover {
   margin-top: 40px;
 }
 
-.inicioCard, .card {
-  background: white;
+.card, .inicioCard {
+  background: var(--blanco);
+  border: 1px solid var(--borde-suave);
+  border-radius: 16px; 
   padding: 25px;
-  border-radius: 20px;
   margin-bottom: 20px;
-  transition: 0.4s;
-  box-shadow: 0 0 15px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); 
+  transition: all 0.3s ease;
 }
 
-.inicioCard:hover, .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+.card:hover, .inicioCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px rgba(39, 174, 96, 0.1); 
 }
 
-.inicioCard h2, .card h2 {
-  color: #2d6a4f;
+.card h2, .inicioCard h2 {
+  color: var(--verde-oscuro);
   margin-bottom: 15px;
 }
+.card h3 {
+  color: var(--verde-oscuro);
+  font-size: 20px;
+  margin-bottom: 10px;
+}
 
-/* Estilos para los Inputs */
-input, select, textarea {
+input[type="text"], input[type="number"], input[type="date"], input[type="url"], input[type="password"], select, textarea {
   width: 100%;
-  padding: 10px;
+  background: #f8faf9;
+  border: 1px solid var(--borde-suave);
+  border-radius: 10px;
+  padding: 12px;
   margin-top: 5px;
   margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
   font-size: 16px;
+  transition: 0.3s;
 }
 
-label {
-  font-weight: bold;
-  color: #333;
+input:focus, textarea:focus, select:focus {
+  border-color: var(--verde-principal);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.2);
 }
+
+label { font-weight: bold; color: #333; }
+.header-seccion { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 
 /* =======================
    CLIMA
 ======================= */
 .climaCard {
   margin-top: 40px;
-  background: linear-gradient(135deg, #2d6a4f, #40916c);
+  background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-principal));
   color: white;
 }
-
-.climaCard h1, .climaCard h2, .climaCard h3 {
-  color: white;
-}
-
-#clima {
-  margin-top: 20px;
-  font-size: 18px;
-  line-height: 2;
-}
+.climaCard h1, .climaCard h2, .climaCard h3 { color: white; }
+#clima { margin-top: 20px; font-size: 18px; line-height: 2; }
 
 /* =======================
    LOGIN (MODAL)
 ======================= */
 .login {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
@@ -230,26 +253,11 @@ label {
   box-shadow: 0 15px 30px rgba(0,0,0,0.3);
   text-align: center;
 }
-
-.login-box h2 {
-  color: #2d6a4f;
-  margin-bottom: 20px;
-}
+.login-box h2 { color: var(--verde-oscuro); margin-bottom: 20px; }
 
 /* =======================
    ANIMACIONES
 ======================= */
-@keyframes fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideLeft {
-  from { opacity: 0; transform: translateX(-50px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideRight {
-  from { opacity: 0; transform: translateX(50px); }
-  to { opacity: 1; transform: translateX(0); }
-}
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
