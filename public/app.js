@@ -82,7 +82,7 @@ function cambiarColor() {
 }
 
 // =======================
-// FUNCIONES DE CREACIÓN 
+// FUNCIONES DE CREACIÓN (CON REGLAS DE DETECCIÓN CLOSET BLINDADAS)
 // =======================
 function leerImagen(input, callback) {
   if (input.files && input.files[0]) {
@@ -112,7 +112,7 @@ function crearRegistro() {
         <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
         <div class="listaComentarios"></div>
         <input type="text" placeholder="Escribe un comentario y presiona Enter" onkeypress="agregarComentario(event, this)">
-        <button type="button" class="btn-borrar solo-admin" onclick="this.parentElement.remove(); guardarLocal();">❌ Borrar Registro</button>
+        <button type="button" class="btn-borrar solo-admin" onclick="this.closest('.card').remove(); guardarLocal();">❌ Borrar Registro</button>
       </div>
     `;
     
@@ -142,12 +142,15 @@ function crearArticulo() {
         <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
         <div class="listaComentarios"></div>
         <input type="text" placeholder="Escribe un comentario y presiona Enter" onkeypress="agregarComentario(event, this)">
-        <button type="button" class="btn-borrar solo-admin" onclick="this.parentElement.remove(); guardarLocal();">❌ Borrar Artículo</button>
+        <button type="button" class="btn-borrar solo-admin" onclick="this.closest('.card').remove(); guardarLocal();">❌ Borrar Artículo</button>
       </div>
     `;
     document.getElementById('listaArticulos').insertAdjacentHTML('afterbegin', html);
     guardarLocal();
     alert("Artículo publicado");
+    document.getElementById('tituloArticulo').value = "";
+    document.getElementById('contenidoArticulo').value = "";
+    document.getElementById('imagenArticulo').value = "";
   });
 }
 
@@ -166,12 +169,14 @@ function crearDiagrama() {
         <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
         <div class="listaComentarios"></div>
         <input type="text" placeholder="Escribe un comentario y presiona Enter" onkeypress="agregarComentario(event, this)">
-        <button type="button" class="btn-borrar solo-admin" onclick="this.parentElement.remove(); guardarLocal();">❌ Borrar Diagrama</button>
+        <button type="button" class="btn-borrar solo-admin" onclick="this.closest('.card').remove(); guardarLocal();">❌ Borrar Diagrama</button>
       </div>
     `;
     document.getElementById('listaDiagramas').insertAdjacentHTML('afterbegin', html);
     guardarLocal();
     alert("Diagrama publicado");
+    document.getElementById('tituloDiagrama').value = "";
+    document.getElementById('imagenDiagrama').value = "";
   });
 }
 
@@ -187,12 +192,14 @@ function crearTutorial() {
       <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
       <div class="listaComentarios"></div>
       <input type="text" placeholder="Escribe un comentario y presiona Enter" onkeypress="agregarComentario(event, this)">
-      <button type="button" class="btn-borrar solo-admin" onclick="this.parentElement.remove(); guardarLocal();">❌ Borrar Tutorial</button>
+      <button type="button" class="btn-borrar solo-admin" onclick="this.closest('.card').remove(); guardarLocal();">❌ Borrar Tutorial</button>
     </div>
   `;
   document.getElementById('listaTutoriales').insertAdjacentHTML('afterbegin', html);
   guardarLocal();
   alert("Tutorial publicado");
+  document.getElementById('tituloTutorial').value = "";
+  document.getElementById('linkTutorial').value = "";
 }
 
 // =======================
@@ -205,9 +212,9 @@ function agregarComentario(event, input) {
 
     const lista = input.parentElement.querySelector(".listaComentarios");
     lista.innerHTML += `
-      <div style="background:#f4f9f4; padding:8px; border-radius:5px; margin-bottom:8px; border:1px solid #e2e8f0;">
+      <div class="comentario-item" style="background:#f4f9f4; padding:8px; border-radius:5px; margin-bottom:8px; border:1px solid #e2e8f0; display:flow-root;">
         👤 ${texto}
-        <button type="button" class="solo-admin" style="float:right; border:none; background:none; cursor:pointer; color:red;" onclick="this.parentElement.remove(); guardarLocal()">❌</button>
+        <button type="button" class="solo-admin" style="float:right; border:none; background:none; cursor:pointer; color:red; font-weight:bold;" onclick="this.parentElement.remove(); guardarLocal()">❌</button>
       </div>
     `;
     input.value = "";
@@ -253,7 +260,7 @@ function procesarArchivoAdmin(event) {
             <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
             <div class="listaComentarios"></div>
             <input type="text" placeholder="Escribe un comentario y presiona Enter" onkeypress="agregarComentario(event, this)">
-            <button type="button" class="btn-borrar solo-admin" onclick="this.parentElement.remove(); guardarLocal();">❌ Borrar Registro</button>
+            <button type="button" class="btn-borrar solo-admin" onclick="this.closest('.card').remove(); guardarLocal();">❌ Borrar Registro</button>
           </div>
         `;
       }
@@ -277,7 +284,7 @@ function procesarArchivoAdmin(event) {
           <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
           <div class="listaComentarios"></div>
           <input type="text" placeholder="Escribe un comentario y presiona Enter" onkeypress="agregarComentario(event, this)">
-          <button type="button" class="btn-borrar solo-admin" onclick="this.parentElement.remove(); guardarLocal();">❌ Borrar Documento</button>
+          <button type="button" class="btn-borrar solo-admin" onclick="this.closest('.card').remove(); guardarLocal();">❌ Borrar Documento</button>
         </div>
       `;
       document.getElementById('listaRegistros').insertAdjacentHTML('afterbegin', htmlDocumento);
@@ -301,7 +308,6 @@ function descargarExcel() {
   let csv = "Nombre,Altura (cm),Fecha\n";
   tarjetas.forEach(tarjeta => {
     const titulo = tarjeta.querySelector('h3').innerText;
-    // Evitar exportar los PDF/Word al excel
     if(titulo.includes('PDF') || titulo.includes('WORD')) return;
 
     const nombre = titulo.replace('🌱 ', '');
@@ -362,6 +368,19 @@ function cargarLocal() {
   document.getElementById("listaTutoriales").innerHTML = localStorage.getItem("tutoriales") || "";
 }
 cargarLocal();
+
+function limpiarSistema() {
+  if (rolActual !== 'admin') return alert("Solo el administrador puede borrar la base de datos.");
+  const confirmacion = confirm("⚠️ ADVERTENCIA: Esto borrará absolutamente TODOS los registros, artículos, diagramas y tutoriales para limpiar la caché corrupta. ¿Proceder?");
+  if (confirmacion) {
+    localStorage.clear();
+    document.getElementById('listaRegistros').innerHTML = "";
+    document.getElementById('listaArticulos').innerHTML = "";
+    document.getElementById('listaDiagramas').innerHTML = "";
+    document.getElementById('listaTutoriales').innerHTML = "";
+    alert("✅ Sistema limpio. ¡Ya puedes crear contenido nuevo!");
+  }
+}
 
 let mantenimiento = { registros: false, articulos: false, diagramas: false, tutoriales: false };
 
