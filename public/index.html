@@ -130,8 +130,18 @@
         <section id="registros" class="seccion">
             <div class="header-seccion">
                 <h1>🌱 Registros</h1>
-                <button type="button" class="btn-excel" onclick="descargarExcel()">⬇️ Descargar Excel</button>
+                
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    
+                    <div id="zonaAdminSubida" class="oculto" style="display: none; gap: 10px;">
+                        <input type="file" id="subirArchivoAdmin" accept=".csv, .xlsx, .pdf, .doc, .docx" style="display: none;" onchange="procesarArchivoAdmin(event)">
+                        <button type="button" class="btn-subir" onclick="document.getElementById('subirArchivoAdmin').click()">⬆️ Subir Documento (Excel/PDF/Word)</button>
+                    </div>
+                    
+                    <button type="button" class="btn-excel" onclick="descargarExcel()">⬇️ Descargar Excel</button>
+                </div>
             </div>
+            
             <div id="estadoRegistros"></div>
             <div id="listaRegistros"></div>
         </section>
