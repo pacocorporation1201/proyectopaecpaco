@@ -1,406 +1,354 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const multer = require("multer");
+
+const cloudinary = require("cloudinary").v2;
+
+const {
+  CloudinaryStorage
+} = require("multer-storage-cloudinary");
+
+const app = express();
+
+
 // =======================
-// CREAR REGISTRO
+// CONFIG
 // =======================
 
-async function crearRegistro(){
+app.use(cors());
 
-  const alumno =
-  document.getElementById("alumno").value;
+app.use(express.json());
 
-  const altura =
-  document.getElementById("altura").value;
+app.use(express.urlencoded({
+  extended:true
+}));
 
-  const fecha =
-  document.getElementById("fecha").value;
+app.use(express.static("public"));
 
-  const imagen =
-  document.getElementById("imagenRegistro").files[0];
 
-  const formData =
-  new FormData();
+// =======================
+// MONGO
+// =======================
 
-  formData.append(
-    "alumno",
-    alumno
+mongoose.connect(process.env.MONGO_URL)
+
+.then(()=>{
+
+  console.log("✅ Mongo conectado");
+
+})
+
+.catch((err)=>{
+
+  console.log(err);
+
+});
+
+
+// =======================
+// CLOUDINARY
+// =======================
+
+cloudinary.config({
+
+  cloud_name:
+  process.env.CLOUD_NAME,
+
+  api_key:
+  process.env.API_KEY,
+
+  api_secret:
+  process.env.API_SECRET
+
+});
+
+
+// =======================
+// STORAGE
+// =======================
+
+const storage =
+new CloudinaryStorage({
+
+  cloudinary:cloudinary,
+
+  params:async(req,file)=>({
+
+    folder:"lavanda",
+
+    allowed_formats:[
+      "jpg",
+      "png",
+      "jpeg",
+      "webp"
+    ]
+
+  })
+
+});
+
+const upload =
+multer({ storage });
+
+
+// =======================
+// MODELOS
+// =======================
+
+const Registro =
+mongoose.model("Registro",{
+
+  alumno:String,
+
+  altura:String,
+
+  fecha:String,
+
+  imagen:String
+
+});
+
+
+const Articulo =
+mongoose.model("Articulo",{
+
+  titulo:String,
+
+  contenido:String,
+
+  imagen:String
+
+});
+
+
+const Diagrama =
+mongoose.model("Diagrama",{
+
+  titulo:String,
+
+  imagen:String
+
+});
+
+
+const Tutorial =
+mongoose.model("Tutorial",{
+
+  titulo:String,
+
+  link:String
+
+});
+
+
+// =======================
+// REGISTROS
+// =======================
+
+app.post(
+"/registros",
+upload.single("imagen"),
+async(req,res)=>{
+
+  try{
+
+    const nuevo =
+    new Registro({
+
+      alumno:req.body.alumno,
+
+      altura:req.body.altura,
+
+      fecha:req.body.fecha,
+
+      imagen:
+      req.file
+      ? req.file.path
+      : ""
+
+    });
+
+    await nuevo.save();
+
+    res.json(nuevo);
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
+
+});
+
+
+app.get(
+"/registros",
+async(req,res)=>{
+
+  const datos =
+  await Registro.find();
+
+  res.json(datos);
+
+});
+
+
+// =======================
+// ARTICULOS
+// =======================
+
+app.post(
+"/articulos",
+upload.single("imagen"),
+async(req,res)=>{
+
+  try{
+
+    const nuevo =
+    new Articulo({
+
+      titulo:req.body.titulo,
+
+      contenido:req.body.contenido,
+
+      imagen:
+      req.file
+      ? req.file.path
+      : ""
+
+    });
+
+    await nuevo.save();
+
+    res.json(nuevo);
+
+  }catch(error){
+
+    console.log(error);
+
+  }
+
+});
+
+
+app.get(
+"/articulos",
+async(req,res)=>{
+
+  const datos =
+  await Articulo.find();
+
+  res.json(datos);
+
+});
+
+
+// =======================
+// DIAGRAMAS
+// =======================
+
+app.post(
+"/diagramas",
+upload.single("imagen"),
+async(req,res)=>{
+
+  try{
+
+    const nuevo =
+    new Diagrama({
+
+      titulo:req.body.titulo,
+
+      imagen:
+      req.file
+      ? req.file.path
+      : ""
+
+    });
+
+    await nuevo.save();
+
+    res.json(nuevo);
+
+  }catch(error){
+
+    console.log(error);
+
+  }
+
+});
+
+
+app.get(
+"/diagramas",
+async(req,res)=>{
+
+  const datos =
+  await Diagrama.find();
+
+  res.json(datos);
+
+});
+
+
+// =======================
+// TUTORIALES
+// =======================
+
+app.post(
+"/tutoriales",
+async(req,res)=>{
+
+  try{
+
+    const nuevo =
+    new Tutorial({
+
+      titulo:req.body.titulo,
+
+      link:req.body.link
+
+    });
+
+    await nuevo.save();
+
+    res.json(nuevo);
+
+  }catch(error){
+
+    console.log(error);
+
+  }
+
+});
+
+
+app.get(
+"/tutoriales",
+async(req,res)=>{
+
+  const datos =
+  await Tutorial.find();
+
+  res.json(datos);
+
+});
+
+
+// =======================
+// PUERTO
+// =======================
+
+const PORT =
+process.env.PORT || 3000;
+
+app.listen(PORT,()=>{
+
+  console.log(
+    "🚀 Servidor iniciado en puerto " + PORT
   );
 
-  formData.append(
-    "altura",
-    altura
-  );
-
-  formData.append(
-    "fecha",
-    fecha
-  );
-
-  formData.append(
-    "imagen",
-    imagen
-  );
-
-  await fetch("/registros",{
-
-    method:"POST",
-
-    body:formData
-
-  });
-
-  cargarRegistros();
-
-}
-
-
-// =======================
-// CARGAR REGISTROS
-// =======================
-
-async function cargarRegistros(){
-
-  const res =
-  await fetch("/registros");
-
-  const data =
-  await res.json();
-
-  const lista =
-  document.getElementById(
-    "listaRegistros"
-  );
-
-  lista.innerHTML = "";
-
-  data.forEach((r)=>{
-
-    lista.innerHTML += `
-
-      <div class="card">
-
-        <h2>
-        ${r.alumno}
-        </h2>
-
-        <p>
-        🌱 Altura:
-        ${r.altura} cm
-        </p>
-
-        <p>
-        📅 Fecha:
-        ${r.fecha}
-        </p>
-
-        ${
-          r.imagen
-          ?
-          `
-          <img
-          src="${r.imagen}"
-          class="imagenCard">
-          `
-          :
-          ""
-        }
-
-      </div>
-
-    `;
-
-  });
-
-}
-
-cargarRegistros();
-
-
-
-// =======================
-// CREAR ARTICULO
-// =======================
-
-async function crearArticulo(){
-
-  const titulo =
-  document.getElementById(
-    "tituloArticulo"
-  ).value;
-
-  const contenido =
-  document.getElementById(
-    "contenidoArticulo"
-  ).value;
-
-  const imagen =
-  document.getElementById(
-    "imagenArticulo"
-  ).files[0];
-
-  const formData =
-  new FormData();
-
-  formData.append(
-    "titulo",
-    titulo
-  );
-
-  formData.append(
-    "contenido",
-    contenido
-  );
-
-  formData.append(
-    "imagen",
-    imagen
-  );
-
-  await fetch("/articulos",{
-
-    method:"POST",
-
-    body:formData
-
-  });
-
-  cargarArticulos();
-
-}
-
-
-// =======================
-// CARGAR ARTICULOS
-// =======================
-
-async function cargarArticulos(){
-
-  const res =
-  await fetch("/articulos");
-
-  const data =
-  await res.json();
-
-  const lista =
-  document.getElementById(
-    "listaArticulos"
-  );
-
-  lista.innerHTML = "";
-
-  data.forEach((a)=>{
-
-    lista.innerHTML += `
-
-      <div class="card">
-
-        <h2>
-        ${a.titulo}
-        </h2>
-
-        <p>
-        ${a.contenido}
-        </p>
-
-        ${
-          a.imagen
-          ?
-          `
-          <img
-          src="${a.imagen}"
-          class="imagenCard">
-          `
-          :
-          ""
-        }
-
-      </div>
-
-    `;
-
-  });
-
-}
-
-cargarArticulos();
-
-
-
-// =======================
-// CREAR DIAGRAMA
-// =======================
-
-async function crearDiagrama(){
-
-  const titulo =
-  document.getElementById(
-    "tituloDiagrama"
-  ).value;
-
-  const imagen =
-  document.getElementById(
-    "imagenDiagrama"
-  ).files[0];
-
-  const formData =
-  new FormData();
-
-  formData.append(
-    "titulo",
-    titulo
-  );
-
-  formData.append(
-    "imagen",
-    imagen
-  );
-
-  await fetch("/diagramas",{
-
-    method:"POST",
-
-    body:formData
-
-  });
-
-  cargarDiagramas();
-
-}
-
-
-// =======================
-// CARGAR DIAGRAMAS
-// =======================
-
-async function cargarDiagramas(){
-
-  const res =
-  await fetch("/diagramas");
-
-  const data =
-  await res.json();
-
-  const lista =
-  document.getElementById(
-    "listaDiagramas"
-  );
-
-  lista.innerHTML = "";
-
-  data.forEach((d)=>{
-
-    lista.innerHTML += `
-
-      <div class="card">
-
-        <h2>
-        ${d.titulo}
-        </h2>
-
-        ${
-          d.imagen
-          ?
-          `
-          <img
-          src="${d.imagen}"
-          class="imagenCard">
-          `
-          :
-          ""
-        }
-
-      </div>
-
-    `;
-
-  });
-
-}
-
-cargarDiagramas();
-
-
-
-// =======================
-// CREAR TUTORIAL
-// =======================
-
-async function crearTutorial(){
-
-  const titulo =
-  document.getElementById(
-    "tituloTutorial"
-  ).value;
-
-  const link =
-  document.getElementById(
-    "linkTutorial"
-  ).value;
-
-  await fetch("/tutoriales",{
-
-    method:"POST",
-
-    headers:{
-      "Content-Type":
-      "application/json"
-    },
-
-    body:JSON.stringify({
-
-      titulo,
-      link
-
-    })
-
-  });
-
-  cargarTutoriales();
-
-}
-
-
-// =======================
-// CARGAR TUTORIALES
-// =======================
-
-async function cargarTutoriales(){
-
-  const res =
-  await fetch("/tutoriales");
-
-  const data =
-  await res.json();
-
-  const lista =
-  document.getElementById(
-    "listaTutoriales"
-  );
-
-  lista.innerHTML = "";
-
-  data.forEach((t)=>{
-
-    lista.innerHTML += `
-
-      <div class="card">
-
-        <h2>
-        ${t.titulo}
-        </h2>
-
-        <a
-        href="${t.link}"
-        target="_blank">
-
-        🎥 Ver Tutorial
-
-        </a>
-
-      </div>
-
-    `;
-
-  });
-
-}
-
-cargarTutoriales();
+});
