@@ -142,6 +142,22 @@ mongoose.model("Tutorial",{
 });
 
 
+const Comentario =
+mongoose.model("Comentario",{
+
+  seccion:String,   // "registro" | "articulo" | "diagrama" | "tutorial"
+
+  referenciaId:String,
+
+  autor:String,
+
+  texto:String,
+
+  fecha:{ type: Date, default: Date.now }
+
+});
+
+
 // =======================
 // REGISTROS
 // =======================
@@ -334,6 +350,86 @@ async(req,res)=>{
   await Tutorial.find();
 
   res.json(datos);
+
+});
+
+
+// =======================
+// COMENTARIOS
+// =======================
+
+app.post(
+"/comentarios",
+async(req,res)=>{
+
+  try{
+
+    const nuevo =
+    new Comentario({
+
+      seccion:req.body.seccion,
+
+      referenciaId:req.body.referenciaId,
+
+      autor:req.body.autor,
+
+      texto:req.body.texto
+
+    });
+
+    await nuevo.save();
+
+    res.json(nuevo);
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
+
+});
+
+
+app.get(
+"/comentarios",
+async(req,res)=>{
+
+  const { seccion, referenciaId } =
+  req.query;
+
+  const filtro = {};
+
+  if(seccion) filtro.seccion = seccion;
+
+  if(referenciaId) filtro.referenciaId = referenciaId;
+
+  const datos =
+  await Comentario.find(filtro).sort({ fecha: 1 });
+
+  res.json(datos);
+
+});
+
+
+app.delete(
+"/comentarios/:id",
+async(req,res)=>{
+
+  try{
+
+    await Comentario.findByIdAndDelete(req.params.id);
+
+    res.json({ ok: true });
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
 
 });
 
