@@ -682,3 +682,63 @@ function limpiarSistema(){
   );
 
 }
+
+
+// =======================
+// QR
+// =======================
+
+function mostrarQR(){
+
+  document
+  .getElementById("modalQR")
+  .classList.remove("oculto");
+
+  const contenedor =
+  document.getElementById("qrCanvas");
+
+  // Solo generar una vez
+  if(contenedor.innerHTML !== "") return;
+
+  new QRCode(contenedor, {
+
+    text: "https://proyectopaecpaco.onrender.com/",
+
+    width: 220,
+
+    height: 220,
+
+    colorDark: "#1b3a2a",
+
+    colorLight: "#ffffff",
+
+    correctLevel: QRCode.CorrectLevel.H
+
+  });
+
+}
+
+function cerrarQR(){
+
+  document
+  .getElementById("modalQR")
+  .classList.add("oculto");
+
+}
+
+function descargarQR(){
+
+  const canvas =
+  document.querySelector("#qrCanvas canvas");
+
+  if(!canvas){
+    alert("El QR aún no está listo.");
+    return;
+  }
+
+  const a = document.createElement("a");
+  a.href = canvas.toDataURL("image/png");
+  a.download = "qr-lavanda.png";
+  a.click();
+
+}

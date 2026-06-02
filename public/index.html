@@ -17,6 +17,7 @@
         <button type="button" onclick="mostrarSeccion('tutoriales')">🎥 Tutoriales</button>
         <button type="button" onclick="mostrarLogin()">🔐 Entrar</button>
         <button type="button" id="btnPanel" class="oculto" onclick="mostrarSeccion('panelRegistro')">⚙ Panel</button>
+        <button type="button" onclick="mostrarQR()">📲 Compartir QR</button>
     </div>
 
     <div class="contenido">
@@ -178,6 +179,23 @@
         </form>
     </div>
 
+    <!-- MODAL QR -->
+    <div class="login oculto" id="modalQR">
+        <div class="login-box" style="text-align:center;">
+            <h2>📲 Compartir página</h2>
+            <p style="font-size:14px; color:#666; margin-bottom:16px;">
+                Escanea el código para abrir la app
+            </p>
+            <div id="qrCanvas" style="display:flex; justify-content:center; margin-bottom:16px;"></div>
+            <p style="font-size:12px; color:#aaa; word-break:break-all; margin-bottom:16px;">
+                https://proyectopaecpaco.onrender.com/
+            </p>
+            <button type="button" onclick="descargarQR()" style="margin-right:10px;">⬇️ Descargar</button>
+            <button type="button" style="background:#95a5a6;" onclick="cerrarQR()">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
