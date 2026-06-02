@@ -262,4 +262,4 @@ label { font-weight: bold; color: #333; }
 ======================= */
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes slideRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }s
+@keyframes slideRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
