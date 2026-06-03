@@ -8,6 +8,14 @@
 </head>
 <body>
 
+    <!-- SEGUNDO LOGO FIJO SUPERIOR DERECHO -->
+    <div id="segundoLogoHeader" style="display:none; position:fixed; top:16px; right:24px; z-index:999;">
+        <img id="segundoLogoImg" src="" alt="Segundo Logo"
+             style="width:70px; height:70px; object-fit:contain; border-radius:50%;
+                    border:3px solid rgba(124,92,191,0.3); background:#fff; padding:5px;
+                    box-shadow:0 4px 15px rgba(0,0,0,0.15);">
+    </div>
+
     <div class="sidebar">
         <h2>🌱 Lavanda</h2>
         <div class="sidebar-logo" id="sidebarLogo" style="display:none;">
@@ -37,6 +45,7 @@
                     <div class="hero-botones">
                         <button type="button" onclick="mostrarSeccion('articulos')">📰 Ver Artículos</button>
                         <button type="button" onclick="mostrarSeccion('registros')">🌱 Ver Registros</button>
+                        <button type="button" onclick="window.open('juego.html','_blank')">🎮 Jugar</button>
                     </div>
                 </div>
                 <div class="hero-imagen">
@@ -59,6 +68,14 @@
                 </div>
             </div>
 
+            <!-- REDES SOCIALES EN INICIO -->
+            <div id="seccionRedesInicio" style="margin-top:40px; display:none;">
+                <div class="card">
+                    <h2>🌐 Redes Sociales de Registradores</h2>
+                    <div id="listaRedesInicio"></div>
+                </div>
+            </div>
+
             <div class="card climaCard">
                 <h1>🌤 Clima en Dolores Hidalgo, Gto.</h1>
                 <div id="clima">
@@ -78,13 +95,27 @@
                     <button type="button" onclick="modoMantenimiento()">🚧 Activar/Desactivar Mantenimiento</button>
                     <button type="button" class="btn-borrar" onclick="limpiarSistema()" style="margin-top: 15px; width: 100%;">🗑️ Borrar toda la base de datos (Reset)</button>
                 </div>
+
+                <!-- LOGO 1 -->
                 <div class="card">
-                    <h2>🖼️ Logo de la página</h2>
+                    <h2>🖼️ Logo de la página (sidebar)</h2>
                     <p style="font-size:14px; color:#666; margin-bottom:12px;">Sube el logo y aparecerá en la esquina superior izquierda.</p>
                     <input type="file" id="archivoLogo" accept="image/*">
                     <button type="button" onclick="subirLogo()" style="margin-top:8px;">⬆️ Subir Logo</button>
                     <p id="estadoLogo" style="margin-top:8px; font-size:13px; color:var(--verde-principal);"></p>
                 </div>
+
+                <!-- LOGO 2 -->
+                <div class="card">
+                    <h2>🖼️ Segundo Logo (esquina superior derecha)</h2>
+                    <p style="font-size:14px; color:#666; margin-bottom:12px;">Aparece fijo en la esquina superior derecha. Se guarda en Cloudinary.</p>
+                    <input type="file" id="archivoLogo2" accept="image/*">
+                    <button type="button" onclick="subirLogo2()" style="margin-top:8px;">⬆️ Subir Segundo Logo</button>
+                    <button type="button" class="btn-borrar" onclick="borrarLogo2()" style="margin-top:8px;">🗑️ Borrar Segundo Logo</button>
+                    <p id="estadoLogo2" style="margin-top:8px; font-size:13px; color:var(--verde-principal);"></p>
+                </div>
+
+                <!-- EXCEL -->
                 <div class="card">
                     <h2>📂 Subir archivo Excel</h2>
                     <p style="font-size:14px; color:#666; margin-bottom:12px;">Sube un Excel o CSV y los usuarios podrán descargarlo desde la sección de Registros.</p>
@@ -94,6 +125,7 @@
                 </div>
             </div>
 
+            <!-- FORMULARIO REGISTRO (registrador y admin) -->
             <form class="card">
                 <h2>🌱 Nuevo Registro</h2>
                 <label for="alumno">Nombre del alumno:</label>
@@ -105,6 +137,27 @@
                 <label for="imagenRegistro">Imagen de la planta:</label>
                 <input type="file" id="imagenRegistro" accept="image/*">
                 <button type="button" onclick="crearRegistro()">Guardar Registro</button>
+            </form>
+
+            <!-- FORMULARIO REDES SOCIALES (registrador y admin) -->
+            <form class="card">
+                <h2>🌐 Publicar Red Social</h2>
+                <p style="font-size:14px; color:#666; margin-bottom:12px;">Agrega una red social que aparecerá en la página de inicio.</p>
+                <label for="nombreRedSocial">Tu nombre:</label>
+                <input type="text" id="nombreRedSocial" placeholder="Ej. Juan Pérez" required>
+                <label for="plataformaRedSocial">Plataforma:</label>
+                <select id="plataformaRedSocial">
+                    <option value="instagram">📸 Instagram</option>
+                    <option value="facebook">📘 Facebook</option>
+                    <option value="twitter">🐦 Twitter / X</option>
+                    <option value="tiktok">🎵 TikTok</option>
+                    <option value="youtube">▶️ YouTube</option>
+                    <option value="otro">🔗 Otro</option>
+                </select>
+                <label for="urlRedSocial">URL o usuario:</label>
+                <input type="text" id="urlRedSocial" placeholder="Ej. instagram.com/juan o @juan" required>
+                <button type="button" onclick="publicarRedSocial()">🌐 Publicar Red Social</button>
+                <p id="estadoRedSocial" style="margin-top:8px; font-size:13px; color:var(--verde-principal);"></p>
             </form>
 
             <form class="card">
@@ -142,7 +195,6 @@
             <div class="header-seccion">
                 <h1>🌱 Registros</h1>
                 <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                    <!-- Solo visible para admin -->
                     <button
                       type="button"
                       id="btnExcelAdmin"
@@ -150,7 +202,6 @@
                       onclick="descargarExcel()">
                       ⬇️ Descargar Excel
                     </button>
-                    <!-- Visible para todos si hay archivo subido -->
                     <div id="zonaDescargaExcel" style="display:none;">
                         <a id="linkDescargaExcel" href="#" download>
                             <button type="button" class="btn-excel">📥 Descargar archivo del admin</button>

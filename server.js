@@ -65,7 +65,7 @@ cloudinary.config({
 
 
 // =======================
-// STORAGE
+// STORAGE IMAGENES (registros, articulos, diagramas)
 // =======================
 
 const storage =
@@ -90,6 +90,35 @@ new CloudinaryStorage({
 
 const upload =
 multer({ storage });
+
+
+// =======================
+// STORAGE LOGOS (Cloudinary — permanente)
+// =======================
+
+const storageLogo1 =
+new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async(req, file) => ({
+    folder: "lavanda/logos",
+    public_id: "logo-principal",   // sobreescribe siempre el mismo
+    allowed_formats: ["jpg","png","jpeg","webp"]
+  })
+});
+
+const uploadLogo1 = multer({ storage: storageLogo1 });
+
+const storageLogo2 =
+new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async(req, file) => ({
+    folder: "lavanda/logos",
+    public_id: "logo-secundario",  // sobreescribe siempre el mismo
+    allowed_formats: ["jpg","png","jpeg","webp"]
+  })
+});
+
+const uploadLogo2 = multer({ storage: storageLogo2 });
 
 
 // =======================
@@ -145,7 +174,7 @@ mongoose.model("Tutorial",{
 const Comentario =
 mongoose.model("Comentario",{
 
-  seccion:String,   // "registro" | "articulo" | "diagrama" | "tutorial"
+  seccion:String,
 
   referenciaId:String,
 
@@ -155,6 +184,33 @@ mongoose.model("Comentario",{
 
   fecha:{ type: Date, default: Date.now }
 
+});
+
+
+const RedSocial =
+mongoose.model("RedSocial",{
+
+  nombre:   String,
+
+  plataforma: String,  // instagram | facebook | twitter | tiktok | youtube | otro
+
+  url:      String,
+
+  fecha:    { type: Date, default: Date.now }
+
+});
+
+
+const LogoConfig =
+mongoose.model("LogoConfig",{
+  url:   String,
+  fecha: { type: Date, default: Date.now }
+});
+
+const Logo2Config =
+mongoose.model("Logo2Config",{
+  url:   String,
+  fecha: { type: Date, default: Date.now }
 });
 
 
@@ -212,6 +268,27 @@ async(req,res)=>{
 });
 
 
+app.delete(
+"/registros/:id",
+async(req,res)=>{
+
+  try{
+
+    await Registro.findByIdAndDelete(req.params.id);
+
+    res.json({ ok:true });
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
+
+});
+
+
 // =======================
 // ARTICULOS
 // =======================
@@ -258,6 +335,27 @@ async(req,res)=>{
   await Articulo.find();
 
   res.json(datos);
+
+});
+
+
+app.delete(
+"/articulos/:id",
+async(req,res)=>{
+
+  try{
+
+    await Articulo.findByIdAndDelete(req.params.id);
+
+    res.json({ ok:true });
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
 
 });
 
@@ -310,6 +408,27 @@ async(req,res)=>{
 });
 
 
+app.delete(
+"/diagramas/:id",
+async(req,res)=>{
+
+  try{
+
+    await Diagrama.findByIdAndDelete(req.params.id);
+
+    res.json({ ok:true });
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
+
+});
+
+
 // =======================
 // TUTORIALES
 // =======================
@@ -350,6 +469,27 @@ async(req,res)=>{
   await Tutorial.find();
 
   res.json(datos);
+
+});
+
+
+app.delete(
+"/tutoriales/:id",
+async(req,res)=>{
+
+  try{
+
+    await Tutorial.findByIdAndDelete(req.params.id);
+
+    res.json({ ok:true });
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
 
 });
 
@@ -435,23 +575,196 @@ async(req,res)=>{
 
 
 // =======================
-// PUERTO
+// REDES SOCIALES
 // =======================
 
-const PORT =
-process.env.PORT || 3000;
+app.post(
+"/redes",
+async(req,res)=>{
 
-app.listen(PORT,()=>{
+  try{
 
-  console.log(
-    "🚀 Servidor iniciado en puerto " + PORT
-  );
+    const nueva =
+    new RedSocial({
+
+      nombre:     req.body.nombre,
+
+      plataforma: req.body.plataforma,
+
+      url:        req.body.url
+
+    });
+
+    await nueva.save();
+
+    res.json(nueva);
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
+
+});
+
+
+app.get(
+"/redes",
+async(req,res)=>{
+
+  const datos =
+  await RedSocial.find().sort({ fecha: -1 });
+
+  res.json(datos);
+
+});
+
+
+app.delete(
+"/redes/:id",
+async(req,res)=>{
+
+  try{
+
+    await RedSocial.findByIdAndDelete(req.params.id);
+
+    res.json({ ok:true });
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
 
 });
 
 
 // =======================
-// EXCEL (subir y descargar)
+// LOGO 1 — Cloudinary (permanente)
+// =======================
+
+app.post(
+"/logo/subir",
+uploadLogo1.single("logo"),
+async(req, res) => {
+
+  try{
+
+    if(!req.file){
+      return res.status(400).json({ error: "No se recibió imagen" });
+    }
+
+    await LogoConfig.deleteMany({});
+
+    const doc = new LogoConfig({
+      url: req.file.path   // Cloudinary devuelve URL completa en path
+    });
+
+    await doc.save();
+
+    res.json({ ok: true, url: doc.url });
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
+
+});
+
+app.get(
+"/logo/info",
+async(req, res) => {
+
+  const doc = await LogoConfig.findOne();
+
+  if(!doc){
+    return res.json({ disponible: false });
+  }
+
+  res.json({ disponible: true, url: doc.url });
+
+});
+
+
+// =======================
+// LOGO 2 — Cloudinary (permanente)
+// =======================
+
+app.post(
+"/logo2/subir",
+uploadLogo2.single("logo2"),
+async(req, res) => {
+
+  try{
+
+    if(!req.file){
+      return res.status(400).json({ error: "No se recibió imagen" });
+    }
+
+    await Logo2Config.deleteMany({});
+
+    const doc = new Logo2Config({
+      url: req.file.path   // Cloudinary devuelve URL completa en path
+    });
+
+    await doc.save();
+
+    res.json({ ok: true, url: doc.url });
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
+
+});
+
+app.get(
+"/logo2/info",
+async(req, res) => {
+
+  const doc = await Logo2Config.findOne();
+
+  if(!doc){
+    return res.json({ disponible: false });
+  }
+
+  res.json({ disponible: true, url: doc.url });
+
+});
+
+app.delete(
+"/logo2/borrar",
+async(req, res) => {
+
+  try{
+
+    await Logo2Config.deleteMany({});
+
+    res.json({ ok: true });
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
+
+});
+
+
+// =======================
+// EXCEL (subir y consultar)
 // =======================
 
 const path = require("path");
@@ -511,7 +824,6 @@ mongoose.model("ArchivoExcel",{
 });
 
 
-// Subir Excel (solo admin lo llama)
 app.post(
 "/excel/subir",
 uploadExcel.single("archivo"),
@@ -523,7 +835,6 @@ async(req, res) => {
       return res.status(400).json({ error: "No se recibió archivo" });
     }
 
-    // Guardar referencia en Mongo (1 solo documento)
     await ArchivoExcel.deleteMany({});
 
     const registro = new ArchivoExcel({
@@ -545,7 +856,6 @@ async(req, res) => {
 });
 
 
-// Consultar si hay Excel disponible
 app.get(
 "/excel/info",
 async(req, res) => {
@@ -567,74 +877,16 @@ async(req, res) => {
 
 
 // =======================
-// LOGO (subir y consultar)
+// PUERTO
 // =======================
 
-const storageLogo =
-multer.diskStorage({
+const PORT =
+process.env.PORT || 3000;
 
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
+app.listen(PORT,()=>{
 
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, "logo-lavanda" + ext);
-  }
-
-});
-
-const uploadLogo =
-multer({ storage: storageLogo });
-
-const LogoConfig =
-mongoose.model("LogoConfig",{
-  url:   String,
-  fecha: { type: Date, default: Date.now }
-});
-
-// Subir logo
-app.post(
-"/logo/subir",
-uploadLogo.single("logo"),
-async(req, res) => {
-
-  try{
-
-    if(!req.file){
-      return res.status(400).json({ error: "No se recibió imagen" });
-    }
-
-    await LogoConfig.deleteMany({});
-
-    const doc = new LogoConfig({
-      url: "/uploads/" + req.file.filename
-    });
-
-    await doc.save();
-
-    res.json({ ok: true, url: doc.url });
-
-  }catch(error){
-
-    console.log(error);
-    res.status(500).send(error);
-
-  }
-
-});
-
-// Consultar logo activo
-app.get(
-"/logo/info",
-async(req, res) => {
-
-  const doc = await LogoConfig.findOne();
-
-  if(!doc){
-    return res.json({ disponible: false });
-  }
-
-  res.json({ disponible: true, url: doc.url });
+  console.log(
+    "🚀 Servidor iniciado en puerto " + PORT
+  );
 
 });

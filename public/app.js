@@ -3,6 +3,7 @@
 // =======================
 
 let esAdmin = false;
+let esRegistrador = false;
 
 // =======================
 // NAVEGACION
@@ -43,6 +44,7 @@ window.onload = () => {
   cargarTutoriales();
   verificarExcelDisponible();
   cargarLogo();
+  cargarRedesInicio();
 
 };
 
@@ -89,6 +91,7 @@ function entrar(){
   ){
 
     esAdmin = false;
+    esRegistrador = true;
 
     document
     .getElementById("btnPanel")
@@ -108,6 +111,7 @@ function entrar(){
   ){
 
     esAdmin = true;
+    esRegistrador = true;
 
     document
     .getElementById("btnPanel")
@@ -125,6 +129,13 @@ function entrar(){
     cerrarLogin();
 
     mostrarSeccion("panelRegistro");
+
+    // Recargar todo para que aparezcan botones de borrar
+    cargarRegistros();
+    cargarArticulos();
+    cargarDiagramas();
+    cargarTutoriales();
+    cargarRedesInicio();
 
     return;
 
@@ -273,12 +284,20 @@ async function cargarRegistros(){
     const comentariosHTML =
     await obtenerComentariosHTML("registro", r._id);
 
+    const btnBorrar = esAdmin
+      ? `<button type="button" class="btn-borrar" style="margin-top:10px;"
+           onclick="borrarPublicacion('registros','${r._id}', cargarRegistros)">
+           🗑️ Borrar registro
+         </button>`
+      : "";
+
     lista.innerHTML += `
-      <div class="card">
+      <div class="card" id="item-registro-${r._id}">
         <h2>${r.alumno}</h2>
         <p>🌱 ${r.altura} cm</p>
         <p>📅 ${r.fecha}</p>
         ${r.imagen ? `<img src="${r.imagen}" class="imagenCard">` : ""}
+        ${btnBorrar}
         <div class="seccion-comentarios">
           ${comentariosHTML}
           <div class="form-comentario">
@@ -291,6 +310,19 @@ async function cargarRegistros(){
     `;
 
   }
+
+}
+
+// Borrar cualquier publicación (registros, articulos, diagramas, tutoriales)
+async function borrarPublicacion(coleccion, id, recargarFn){
+
+  if(!confirm("¿Seguro que quieres borrar esta publicación?")) return;
+
+  await fetch(`/${coleccion}/${id}`,{
+    method:"DELETE"
+  });
+
+  recargarFn();
 
 }
 
@@ -351,11 +383,19 @@ async function cargarArticulos(){
     const comentariosHTML =
     await obtenerComentariosHTML("articulo", a._id);
 
+    const btnBorrar = esAdmin
+      ? `<button type="button" class="btn-borrar" style="margin-top:10px;"
+           onclick="borrarPublicacion('articulos','${a._id}', cargarArticulos)">
+           🗑️ Borrar artículo
+         </button>`
+      : "";
+
     lista.innerHTML += `
-      <div class="card">
+      <div class="card" id="item-articulo-${a._id}">
         <h2>${a.titulo}</h2>
         <p>${a.contenido}</p>
         ${a.imagen ? `<img src="${a.imagen}" class="imagenCard">` : ""}
+        ${btnBorrar}
         <div class="seccion-comentarios">
           ${comentariosHTML}
           <div class="form-comentario">
@@ -424,10 +464,18 @@ async function cargarDiagramas(){
     const comentariosHTML =
     await obtenerComentariosHTML("diagrama", d._id);
 
+    const btnBorrar = esAdmin
+      ? `<button type="button" class="btn-borrar" style="margin-top:10px;"
+           onclick="borrarPublicacion('diagramas','${d._id}', cargarDiagramas)">
+           🗑️ Borrar diagrama
+         </button>`
+      : "";
+
     lista.innerHTML += `
-      <div class="card">
+      <div class="card" id="item-diagrama-${d._id}">
         <h2>${d.titulo}</h2>
         ${d.imagen ? `<img src="${d.imagen}" class="imagenCard">` : ""}
+        ${btnBorrar}
         <div class="seccion-comentarios">
           ${comentariosHTML}
           <div class="form-comentario">
@@ -495,10 +543,18 @@ async function cargarTutoriales(){
     const comentariosHTML =
     await obtenerComentariosHTML("tutorial", t._id);
 
+    const btnBorrar = esAdmin
+      ? `<button type="button" class="btn-borrar" style="margin-top:10px;"
+           onclick="borrarPublicacion('tutoriales','${t._id}', cargarTutoriales)">
+           🗑️ Borrar tutorial
+         </button>`
+      : "";
+
     lista.innerHTML += `
-      <div class="card">
+      <div class="card" id="item-tutorial-${t._id}">
         <h2>${t.titulo}</h2>
         <a href="${t.link}" target="_blank">🎥 Ver Tutorial</a>
+        ${btnBorrar}
         <div class="seccion-comentarios">
           ${comentariosHTML}
           <div class="form-comentario">
@@ -591,7 +647,6 @@ async function borrarComentario(id, seccion, referenciaId){
     method:"DELETE"
   });
 
-  // Recargar la sección correspondiente
   if(seccion === "registro")  cargarRegistros();
   if(seccion === "articulo")  cargarArticulos();
   if(seccion === "diagrama")  cargarDiagramas();
@@ -614,14 +669,13 @@ async function descargarExcel(){
     return;
   }
 
-  // Construir CSV (compatible con Excel)
   const encabezado = "Alumno,Altura (cm),Fecha,Imagen\n";
 
   const filas = data.map(r =>
     `"${r.alumno}","${r.altura}","${r.fecha}","${r.imagen || ""}"`
   ).join("\n");
 
-  const csv = "\uFEFF" + encabezado + filas; // BOM para Excel
+  const csv = "\uFEFF" + encabezado + filas;
 
   const blob = new Blob([csv], { type:"text/csv;charset=utf-8;" });
   const url  = URL.createObjectURL(blob);
@@ -699,7 +753,6 @@ function mostrarQR(){
   const contenedor =
   document.getElementById("qrCanvas");
 
-  // Solo generar una vez
   if(contenedor.innerHTML !== "") return;
 
   new QRCode(contenedor, {
@@ -778,7 +831,6 @@ async function subirExcel(){
   if(data.ok){
     estado.textContent = "✅ Archivo subido correctamente.";
     verificarExcelDisponible();
-  cargarLogo();
   } else {
     estado.textContent = "❌ Error al subir el archivo.";
   }
@@ -823,7 +875,7 @@ async function verificarExcelDisponible(){
 
 
 // =======================
-// LOGO
+// LOGO 1 (sidebar) — Cloudinary
 // =======================
 
 async function cargarLogo(){
@@ -843,6 +895,8 @@ async function cargarLogo(){
     contenedor.style.display = "flex";
 
   }
+
+  cargarLogo2();
 
 }
 
@@ -877,5 +931,173 @@ async function subirLogo(){
   } else {
     estado.textContent = "❌ Error al subir el logo.";
   }
+
+}
+
+
+// =======================
+// LOGO 2 (superior derecho) — Cloudinary
+// =======================
+
+async function cargarLogo2(){
+
+  const res  = await fetch("/logo2/info");
+  const data = await res.json();
+
+  const contenedor = document.getElementById("segundoLogoHeader");
+  const img        = document.getElementById("segundoLogoImg");
+
+  if(contenedor && img){
+    if(data.disponible){
+      img.src = data.url;
+      contenedor.style.display = "block";
+    } else {
+      contenedor.style.display = "none";
+    }
+  }
+
+}
+
+async function subirLogo2(){
+
+  const archivo =
+  document.getElementById("archivoLogo2").files[0];
+
+  if(!archivo){
+    alert("Selecciona una imagen primero.");
+    return;
+  }
+
+  const estado = document.getElementById("estadoLogo2");
+  estado.textContent = "Subiendo...";
+
+  const formData = new FormData();
+  formData.append("logo2", archivo);
+
+  const res  = await fetch("/logo2/subir",{ method:"POST", body:formData });
+  const data = await res.json();
+
+  if(data.ok){
+    estado.textContent = "✅ Segundo logo actualizado.";
+    cargarLogo2();
+  } else {
+    estado.textContent = "❌ Error al subir.";
+  }
+
+}
+
+async function borrarLogo2(){
+
+  if(!confirm("¿Borrar el segundo logo?")) return;
+
+  await fetch("/logo2/borrar",{ method:"DELETE" });
+
+  document.getElementById("estadoLogo2").textContent = "✅ Logo eliminado.";
+  cargarLogo2();
+
+}
+
+
+// =======================
+// REDES SOCIALES
+// =======================
+
+const iconosRed = {
+  instagram: "📸",
+  facebook:  "📘",
+  twitter:   "🐦",
+  tiktok:    "🎵",
+  youtube:   "▶️",
+  otro:      "🔗"
+};
+
+async function publicarRedSocial(){
+
+  const nombre    = document.getElementById("nombreRedSocial").value.trim();
+  const plataforma = document.getElementById("plataformaRedSocial").value;
+  const url       = document.getElementById("urlRedSocial").value.trim();
+  const estado    = document.getElementById("estadoRedSocial");
+
+  if(!nombre || !url){
+    alert("Completa tu nombre y la URL.");
+    return;
+  }
+
+  estado.textContent = "Publicando...";
+
+  const res = await fetch("/redes",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ nombre, plataforma, url })
+  });
+
+  const data = await res.json();
+
+  if(data._id){
+    estado.textContent = "✅ Red social publicada.";
+    document.getElementById("nombreRedSocial").value  = "";
+    document.getElementById("urlRedSocial").value     = "";
+    cargarRedesInicio();
+  } else {
+    estado.textContent = "❌ Error al publicar.";
+  }
+
+}
+
+async function cargarRedesInicio(){
+
+  const res  = await fetch("/redes");
+  const data = await res.json();
+
+  const seccion = document.getElementById("seccionRedesInicio");
+  const lista   = document.getElementById("listaRedesInicio");
+
+  if(!seccion || !lista) return;
+
+  if(data.length === 0){
+    seccion.style.display = "none";
+    lista.innerHTML = "";
+    return;
+  }
+
+  seccion.style.display = "block";
+
+  lista.innerHTML = data.map(r => {
+
+    const icono  = iconosRed[r.plataforma] || "🔗";
+    const urlFmt = r.url.startsWith("http") ? r.url : "https://" + r.url;
+
+    const btnBorrar = esAdmin
+      ? `<button type="button" class="btn-borrar-cmt"
+           style="margin-left:auto;"
+           onclick="borrarRedSocial('${r._id}')">🗑️</button>`
+      : "";
+
+    return `
+      <div style="display:flex; align-items:center; gap:10px; padding:10px 0;
+                  border-bottom:1px solid var(--borde-suave);" id="red-${r._id}">
+        <span style="font-size:22px;">${icono}</span>
+        <div style="flex:1;">
+          <strong style="display:block; font-size:14px; color:var(--verde-oscuro);">${r.nombre}</strong>
+          <a href="${urlFmt}" target="_blank"
+             style="font-size:13px; color:var(--verde-principal); word-break:break-all;">
+            ${r.url}
+          </a>
+        </div>
+        ${btnBorrar}
+      </div>
+    `;
+
+  }).join("");
+
+}
+
+async function borrarRedSocial(id){
+
+  if(!confirm("¿Borrar esta red social?")) return;
+
+  await fetch(`/redes/${id}`,{ method:"DELETE" });
+
+  cargarRedesInicio();
 
 }
