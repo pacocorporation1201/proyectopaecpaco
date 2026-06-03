@@ -75,6 +75,13 @@
                     <button type="button" onclick="modoMantenimiento()">🚧 Activar/Desactivar Mantenimiento</button>
                     <button type="button" class="btn-borrar" onclick="limpiarSistema()" style="margin-top: 15px; width: 100%;">🗑️ Borrar toda la base de datos (Reset)</button>
                 </div>
+                <div class="card">
+                    <h2>📂 Subir archivo Excel</h2>
+                    <p style="font-size:14px; color:#666; margin-bottom:12px;">Sube un Excel o CSV y los usuarios podrán descargarlo desde la sección de Registros.</p>
+                    <input type="file" id="archivoExcelAdmin" accept=".xlsx,.xls,.csv">
+                    <button type="button" class="btn-excel" onclick="subirExcel()">⬆️ Subir Excel</button>
+                    <p id="estadoSubidaExcel" style="margin-top:10px; font-size:13px; color:var(--verde-principal);"></p>
+                </div>
             </div>
 
             <form class="card">
@@ -124,14 +131,23 @@
         <section id="registros" class="seccion">
             <div class="header-seccion">
                 <h1>🌱 Registros</h1>
-                <!-- Solo visible tras login admin -->
-                <button
-                  type="button"
-                  id="btnExcelAdmin"
-                  class="btn-excel oculto"
-                  onclick="descargarExcel()">
-                  ⬇️ Descargar Excel
-                </button>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <!-- Solo visible para admin -->
+                    <button
+                      type="button"
+                      id="btnExcelAdmin"
+                      class="btn-excel oculto"
+                      onclick="descargarExcel()">
+                      ⬇️ Descargar Excel
+                    </button>
+                    <!-- Visible para todos si hay archivo subido -->
+                    <div id="zonaDescargaExcel" style="display:none;">
+                        <a id="linkDescargaExcel" href="#" download>
+                            <button type="button" class="btn-excel">📥 Descargar archivo del admin</button>
+                        </a>
+                        <span id="fechaExcel" style="font-size:12px; color:#888; display:block; margin-top:4px;"></span>
+                    </div>
+                </div>
             </div>
             <div id="estadoRegistros"></div>
             <div id="listaRegistros"></div>

@@ -41,6 +41,7 @@ window.onload = () => {
   cargarArticulos();
   cargarDiagramas();
   cargarTutoriales();
+  verificarExcelDisponible();
 
 };
 
@@ -740,5 +741,80 @@ function descargarQR(){
   a.href = canvas.toDataURL("image/png");
   a.download = "qr-lavanda.png";
   a.click();
+
+}
+
+
+// =======================
+// EXCEL ADMIN
+// =======================
+
+async function subirExcel(){
+
+  const archivo =
+  document.getElementById("archivoExcelAdmin").files[0];
+
+  if(!archivo){
+    alert("Selecciona un archivo Excel o CSV primero.");
+    return;
+  }
+
+  const estado =
+  document.getElementById("estadoSubidaExcel");
+
+  estado.textContent = "Subiendo...";
+
+  const formData = new FormData();
+  formData.append("archivo", archivo);
+
+  const res = await fetch("/excel/subir",{
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+
+  if(data.ok){
+    estado.textContent = "✅ Archivo subido correctamente.";
+    verificarExcelDisponible();
+  } else {
+    estado.textContent = "❌ Error al subir el archivo.";
+  }
+
+}
+
+async function verificarExcelDisponible(){
+
+  const res  = await fetch("/excel/info");
+  const data = await res.json();
+
+  const zona =
+  document.getElementById("zonaDescargaExcel");
+
+  if(!zona) return;
+
+  if(data.disponible){
+
+    zona.style.display = "block";
+
+    document
+    .getElementById("linkDescargaExcel")
+    .href = data.url;
+
+    const fecha =
+    new Date(data.fecha)
+    .toLocaleDateString("es-MX", {
+      day:"2-digit", month:"long", year:"numeric"
+    });
+
+    document
+    .getElementById("fechaExcel")
+    .textContent = "Subido el " + fecha;
+
+  } else {
+
+    zona.style.display = "none";
+
+  }
 
 }

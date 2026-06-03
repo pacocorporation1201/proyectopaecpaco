@@ -448,3 +448,119 @@ app.listen(PORT,()=>{
   );
 
 });
+
+
+// =======================
+// EXCEL (subir y descargar)
+// =======================
+
+const path = require("path");
+const fs   = require("fs");
+
+const uploadsDir =
+path.join(__dirname, "public", "uploads");
+
+if(!fs.existsSync(uploadsDir)){
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const storageExcel =
+multer.diskStorage({
+
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+
+  filename: (req, file, cb) => {
+    const ext =
+    path.extname(file.originalname);
+    cb(null, "reporte-lavanda" + ext);
+  }
+
+});
+
+const uploadExcel =
+multer({
+
+  storage: storageExcel,
+
+  fileFilter: (req, file, cb) => {
+
+    const permitidos =
+    [".xlsx", ".xls", ".csv"];
+
+    const ext =
+    path.extname(file.originalname)
+    .toLowerCase();
+
+    if(permitidos.includes(ext)){
+      cb(null, true);
+    } else {
+      cb(new Error("Solo Excel o CSV"));
+    }
+
+  }
+
+});
+
+const ArchivoExcel =
+mongoose.model("ArchivoExcel",{
+  nombre: String,
+  url:    String,
+  fecha:  { type: Date, default: Date.now }
+});
+
+
+// Subir Excel (solo admin lo llama)
+app.post(
+"/excel/subir",
+uploadExcel.single("archivo"),
+async(req, res) => {
+
+  try{
+
+    if(!req.file){
+      return res.status(400).json({ error: "No se recibió archivo" });
+    }
+
+    // Guardar referencia en Mongo (1 solo documento)
+    await ArchivoExcel.deleteMany({});
+
+    const registro = new ArchivoExcel({
+      nombre: req.file.filename,
+      url:    "/uploads/" + req.file.filename
+    });
+
+    await registro.save();
+
+    res.json({ ok: true, url: registro.url });
+
+  }catch(error){
+
+    console.log(error);
+    res.status(500).send(error);
+
+  }
+
+});
+
+
+// Consultar si hay Excel disponible
+app.get(
+"/excel/info",
+async(req, res) => {
+
+  const doc = await ArchivoExcel.findOne();
+
+  if(!doc){
+    return res.json({ disponible: false });
+  }
+
+  res.json({
+    disponible: true,
+    url:    doc.url,
+    nombre: doc.nombre,
+    fecha:  doc.fecha
+  });
+
+});
