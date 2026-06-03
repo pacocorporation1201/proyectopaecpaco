@@ -564,3 +564,77 @@ async(req, res) => {
   });
 
 });
+
+
+// =======================
+// LOGO (subir y consultar)
+// =======================
+
+const storageLogo =
+multer.diskStorage({
+
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, "logo-lavanda" + ext);
+  }
+
+});
+
+const uploadLogo =
+multer({ storage: storageLogo });
+
+const LogoConfig =
+mongoose.model("LogoConfig",{
+  url:   String,
+  fecha: { type: Date, default: Date.now }
+});
+
+// Subir logo
+app.post(
+"/logo/subir",
+uploadLogo.single("logo"),
+async(req, res) => {
+
+  try{
+
+    if(!req.file){
+      return res.status(400).json({ error: "No se recibió imagen" });
+    }
+
+    await LogoConfig.deleteMany({});
+
+    const doc = new LogoConfig({
+      url: "/uploads/" + req.file.filename
+    });
+
+    await doc.save();
+
+    res.json({ ok: true, url: doc.url });
+
+  }catch(error){
+
+    console.log(error);
+    res.status(500).send(error);
+
+  }
+
+});
+
+// Consultar logo activo
+app.get(
+"/logo/info",
+async(req, res) => {
+
+  const doc = await LogoConfig.findOne();
+
+  if(!doc){
+    return res.json({ disponible: false });
+  }
+
+  res.json({ disponible: true, url: doc.url });
+
+});

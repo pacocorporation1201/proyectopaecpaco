@@ -10,6 +10,9 @@
 
     <div class="sidebar">
         <h2>🌱 Lavanda</h2>
+        <div class="sidebar-logo" id="sidebarLogo" style="display:none;">
+            <img id="logoImg" src="" alt="Logo">
+        </div>
         <button type="button" onclick="mostrarSeccion('inicio')">🏠 Inicio</button>
         <button type="button" onclick="mostrarSeccion('registros')">🌱 Registros</button>
         <button type="button" onclick="mostrarSeccion('articulos')">📰 Artículos</button>
@@ -74,6 +77,13 @@
                     <button type="button" onclick="cambiarColor()">🎨 Cambiar Color Aleatorio</button>
                     <button type="button" onclick="modoMantenimiento()">🚧 Activar/Desactivar Mantenimiento</button>
                     <button type="button" class="btn-borrar" onclick="limpiarSistema()" style="margin-top: 15px; width: 100%;">🗑️ Borrar toda la base de datos (Reset)</button>
+                </div>
+                <div class="card">
+                    <h2>🖼️ Logo de la página</h2>
+                    <p style="font-size:14px; color:#666; margin-bottom:12px;">Sube el logo y aparecerá en la esquina superior izquierda.</p>
+                    <input type="file" id="archivoLogo" accept="image/*">
+                    <button type="button" onclick="subirLogo()" style="margin-top:8px;">⬆️ Subir Logo</button>
+                    <p id="estadoLogo" style="margin-top:8px; font-size:13px; color:var(--verde-principal);"></p>
                 </div>
                 <div class="card">
                     <h2>📂 Subir archivo Excel</h2>

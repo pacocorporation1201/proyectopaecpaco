@@ -42,6 +42,7 @@ window.onload = () => {
   cargarDiagramas();
   cargarTutoriales();
   verificarExcelDisponible();
+  cargarLogo();
 
 };
 
@@ -777,6 +778,7 @@ async function subirExcel(){
   if(data.ok){
     estado.textContent = "✅ Archivo subido correctamente.";
     verificarExcelDisponible();
+  cargarLogo();
   } else {
     estado.textContent = "❌ Error al subir el archivo.";
   }
@@ -815,6 +817,65 @@ async function verificarExcelDisponible(){
 
     zona.style.display = "none";
 
+  }
+
+}
+
+
+// =======================
+// LOGO
+// =======================
+
+async function cargarLogo(){
+
+  const res  = await fetch("/logo/info");
+  const data = await res.json();
+
+  const contenedor =
+  document.getElementById("sidebarLogo");
+
+  const img =
+  document.getElementById("logoImg");
+
+  if(data.disponible && contenedor && img){
+
+    img.src = data.url;
+    contenedor.style.display = "flex";
+
+  }
+
+}
+
+async function subirLogo(){
+
+  const archivo =
+  document.getElementById("archivoLogo").files[0];
+
+  if(!archivo){
+    alert("Selecciona una imagen primero.");
+    return;
+  }
+
+  const estado =
+  document.getElementById("estadoLogo");
+
+  estado.textContent = "Subiendo...";
+
+  const formData = new FormData();
+  formData.append("logo", archivo);
+
+  const res = await fetch("/logo/subir",{
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+
+  if(data.ok){
+    estado.textContent = "✅ Logo actualizado.";
+    cargarLogo();
+  } else {
+    estado.textContent = "❌ Error al subir el logo.";
   }
 
 }
