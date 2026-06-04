@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>🌱 Juego Lavanda</title>
     <style>
         :root {
             --morado: #7c5cbf;
             --oscuro: #2e1a0e;
-            --claro:  #f3f0f8;
+            --claro: #f3f0f8;
         }
 
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -19,30 +19,28 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px 10px;
             color: var(--oscuro);
+            touch-action: none; /* Importante para móviles */
         }
 
         h1 {
             font-size: 28px;
             color: var(--morado);
             margin-bottom: 6px;
-            text-align: center;
         }
 
         .subtitulo {
             font-size: 14px;
             color: #888;
             margin-bottom: 16px;
-            text-align: center;
         }
 
         .panel {
             display: flex;
-            gap: 30px;
-            margin-bottom: 14px;
+            gap: 25px;
+            margin-bottom: 12px;
             font-size: 16px;
             font-weight: bold;
         }
@@ -54,7 +52,9 @@
             border-radius: 12px;
             background: #1a0e2e;
             display: block;
-            cursor: none;
+            max-width: 100%;
+            height: auto;
+            touch-action: none;
         }
 
         .controles {
@@ -74,36 +74,31 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
-            display: none;
         }
-
-        #btnReiniciar:hover { background: var(--oscuro); }
 
         #pantallaFin {
             display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.75);
             justify-content: center;
             align-items: center;
-            z-index: 10;
+            z-index: 100;
         }
 
         .caja-fin {
             background: white;
             border-radius: 20px;
-            padding: 40px 50px;
+            padding: 35px 40px;
             text-align: center;
             box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            max-width: 90%;
         }
 
-        .caja-fin h2 { font-size: 36px; margin-bottom: 10px; }
-        .caja-fin p  { font-size: 18px; color: #666; margin-bottom: 20px; }
-
         .caja-fin button {
-            padding: 12px 30px;
+            padding: 12px 28px;
+            margin: 8px 5px;
             background: var(--morado);
             color: white;
             border: none;
@@ -111,27 +106,21 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin: 5px;
-            transition: 0.2s;
         }
-
-        .caja-fin button:hover { background: var(--oscuro); }
 
         a.volver {
             display: inline-block;
-            margin-top: 16px;
+            margin-top: 20px;
             font-size: 14px;
             color: var(--morado);
             text-decoration: none;
         }
-
-        a.volver:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
     <h1>🌸 Lluvia de Lavanda</h1>
-    <p class="subtitulo">¡Atrapa las flores de lavanda y evita las plagas!</p>
+    <p class="subtitulo">¡Atrapa las flores y evita las plagas!</p>
 
     <div class="panel">
         <div>⭐ Puntos: <span id="puntos">0</span></div>
@@ -141,11 +130,13 @@
 
     <canvas id="canvas" width="480" height="500"></canvas>
 
-    <p class="controles">🖱️ Mueve el mouse para mover la cesta · Haz clic para pausar</p>
+    <p class="controles">
+        🖱️ <span id="controlInfo">Mueve el mouse · Toca para pausar</span>
+    </p>
 
     <a class="volver" href="index.html">← Volver a Lavanda App</a>
 
-    <!-- PANTALLA DE FIN -->
+    <!-- Pantalla de fin -->
     <div id="pantallaFin">
         <div class="caja-fin">
             <h2 id="emojiResultado">😢</h2>
@@ -157,18 +148,16 @@
     </div>
 
 <script>
-const canvas  = document.getElementById("canvas");
-const ctx     = canvas.getContext("2d");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-// ─── Estado del juego ───────────────────────────────────────
-let puntos    = 0;
-let vidas     = 3;
-let nivel     = 1;
-let pausado   = false;
+let puntos = 0;
+let vidas = 3;
+let nivel = 1;
+let pausado = false;
 let corriendo = true;
 let frameId;
 
-// ─── Cesta ──────────────────────────────────────────────────
 const cesta = {
     x: canvas.width / 2,
     y: canvas.height - 50,
@@ -177,122 +166,127 @@ const cesta = {
     color: "#7c5cbf"
 };
 
-// ─── Partículas (flores y plagas) ───────────────────────────
 let items = [];
-
-const TIPOS = {
-    flor1:  { emoji:"🌸", puntos: 10,  malo: false },
-    flor2:  { emoji:"💜", puntos: 15,  malo: false },
-    flor3:  { emoji:"🌺", puntos: 20,  malo: false },
-    plaga:  { emoji:"🐛", puntos: -1,  malo: true  },
-    piedra: { emoji:"🪨", puntos: -1,  malo: true  }
-};
-
-function tipoAleatorio(){
-    const buenas  = ["flor1","flor2","flor3"];
-    const malas   = ["plaga","piedra"];
-    // 70% flores, 30% plagas (más plagas con el nivel)
-    const pMala   = Math.min(0.15 + nivel * 0.05, 0.45);
-    return Math.random() < pMala
-        ? malas[Math.floor(Math.random() * malas.length)]
-        : buenas[Math.floor(Math.random() * buenas.length)];
-}
-
-function crearItem(){
-    const tipo = tipoAleatorio();
-    const info = TIPOS[tipo];
-    items.push({
-        x:      20 + Math.random() * (canvas.width - 40),
-        y:      -20,
-        vy:     1.5 + Math.random() * nivel * 0.8,
-        tipo,
-        emoji:  info.emoji,
-        puntos: info.puntos,
-        malo:   info.malo,
-        size:   28
-    });
-}
-
-// ─── Partículas de explosión ────────────────────────────────
 let particulas = [];
-
-function explotar(x, y, color){
-    for(let i = 0; i < 8; i++){
-        const angulo = (Math.PI * 2 / 8) * i;
-        particulas.push({
-            x, y,
-            vx: Math.cos(angulo) * 3,
-            vy: Math.sin(angulo) * 3,
-            vida: 25,
-            color
-        });
-    }
-}
-
-// ─── Cursor personalizado ───────────────────────────────────
 let mouseX = canvas.width / 2;
 
+// Tipos de items
+const TIPOS = {
+    flor1: { emoji: "🌸", puntos: 10, malo: false },
+    flor2: { emoji: "💜", puntos: 15, malo: false },
+    flor3: { emoji: "🌺", puntos: 20, malo: false },
+    plaga: { emoji: "🐛", puntos: -1, malo: true },
+    piedra: { emoji: "🪨", puntos: -1, malo: true }
+};
+
+// Eventos de mouse y touch
 canvas.addEventListener("mousemove", e => {
     const rect = canvas.getBoundingClientRect();
     mouseX = e.clientX - rect.left;
 });
 
-canvas.addEventListener("click", () => {
-    pausado = !pausado;
-});
+canvas.addEventListener("touchstart", handleTouch);
+canvas.addEventListener("touchmove", handleTouch);
+canvas.addEventListener("touchend", e => e.preventDefault());
 
-// ─── Temporizador de spawn ───────────────────────────────────
-let tickSpawn = 0;
-function spawnInterval(){
-    return Math.max(40 - nivel * 4, 18);
+function handleTouch(e) {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    if (e.touches.length > 0) {
+        mouseX = e.touches[0].clientX - rect.left;
+    }
 }
 
-// ─── Estrellas de fondo ──────────────────────────────────────
+// Pausa con clic o toque
+canvas.addEventListener("click", () => { pausado = !pausado; });
+canvas.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) {
+        setTimeout(() => {
+            if (!pausado) pausado = true; // Pausa rápida al tocar
+        }, 50);
+    }
+});
+
+function tipoAleatorio() {
+    const buenas = ["flor1", "flor2", "flor3"];
+    const malas = ["plaga", "piedra"];
+    const pMala = Math.min(0.15 + nivel * 0.05, 0.45);
+    return Math.random() < pMala 
+        ? malas[Math.floor(Math.random() * malas.length)]
+        : buenas[Math.floor(Math.random() * buenas.length)];
+}
+
+function crearItem() {
+    const tipo = tipoAleatorio();
+    const info = TIPOS[tipo];
+    items.push({
+        x: 20 + Math.random() * (canvas.width - 40),
+        y: -30,
+        vy: 1.6 + Math.random() * nivel * 0.85,
+        tipo,
+        emoji: info.emoji,
+        puntos: info.puntos,
+        malo: info.malo,
+        size: 30
+    });
+}
+
+function explotar(x, y, color) {
+    for (let i = 0; i < 10; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        particulas.push({
+            x, y,
+            vx: Math.cos(ang) * (2 + Math.random() * 3),
+            vy: Math.sin(ang) * (2 + Math.random() * 3) - 1,
+            vida: 28,
+            color
+        });
+    }
+}
+
+// Estrellas de fondo
 const estrellas = Array.from({ length: 50 }, () => ({
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height,
-    r: Math.random() * 1.5 + 0.3,
+    r: Math.random() * 1.6 + 0.4,
     op: Math.random()
 }));
 
-// ─── Loop principal ─────────────────────────────────────────
-function loop(){
-
-    if(!corriendo) return;
-
+function loop() {
+    if (!corriendo) return;
     frameId = requestAnimationFrame(loop);
 
-    if(pausado){
-        ctx.fillStyle = "rgba(0,0,0,0.45)";
-        ctx.fillRect(0,0,canvas.width,canvas.height);
+    if (pausado) {
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "white";
-        ctx.font = "bold 32px Segoe UI";
+        ctx.font = "bold 34px Segoe UI";
         ctx.textAlign = "center";
         ctx.fillText("⏸ PAUSA", canvas.width/2, canvas.height/2);
-        ctx.font = "16px Segoe UI";
-        ctx.fillStyle = "#bbb";
-        ctx.fillText("Haz clic para continuar", canvas.width/2, canvas.height/2 + 36);
+        ctx.font = "18px Segoe UI";
+        ctx.fillStyle = "#ddd";
+        ctx.fillText("Toca para continuar", canvas.width/2, canvas.height/2 + 45);
         return;
     }
 
     // Fondo
     ctx.fillStyle = "#1a0e2e";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Estrellas
     estrellas.forEach(s => {
-        s.op += 0.02 * (Math.random() > 0.5 ? 1 : -1);
-        s.op = Math.max(0.1, Math.min(1, s.op));
+        s.op += (Math.random() - 0.5) * 0.08;
+        s.op = Math.max(0.2, Math.min(1, s.op));
         ctx.globalAlpha = s.op;
         ctx.fillStyle = "#e8d0ff";
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fill();
     });
     ctx.globalAlpha = 1;
 
-    // Mover cesta hacia el mouse suavemente
-    cesta.x += (mouseX - cesta.x) * 0.18;
+    // Mover cesta (suavizado)
+    cesta.x += (mouseX - cesta.x) * 0.22;
     cesta.x = Math.max(cesta.w/2, Math.min(canvas.width - cesta.w/2, cesta.x));
 
     // Dibujar cesta
@@ -300,126 +294,118 @@ function loop(){
     ctx.beginPath();
     ctx.roundRect(cesta.x - cesta.w/2, cesta.y, cesta.w, cesta.h, 8);
     ctx.fill();
+
     ctx.fillStyle = "#5a3e8a";
     ctx.beginPath();
     ctx.roundRect(cesta.x - cesta.w/2, cesta.y, cesta.w, 8, 4);
     ctx.fill();
 
     // Spawn
-    tickSpawn++;
-    if(tickSpawn >= spawnInterval()){
+    if (Math.random() < 0.035 + nivel * 0.008) {
         crearItem();
-        tickSpawn = 0;
     }
 
-    // Mover y dibujar items
-    ctx.font = "28px serif";
+    // Actualizar items
+    ctx.font = "30px serif";
     ctx.textAlign = "center";
 
     items = items.filter(item => {
-
         item.y += item.vy;
 
-        // Colisión con cesta
-        if(
+        // Colisión
+        if (
             item.y + item.size/2 >= cesta.y &&
             item.y - item.size/2 <= cesta.y + cesta.h &&
-            item.x >= cesta.x - cesta.w/2 &&
-            item.x <= cesta.x + cesta.w/2
-        ){
-            if(item.malo){
+            Math.abs(item.x - cesta.x) < cesta.w/2 + 15
+        ) {
+            if (item.malo) {
                 vidas--;
-                explotar(item.x, item.y, "#ff4757");
                 document.getElementById("vidas").textContent = vidas;
-                if(vidas <= 0){ finDelJuego(); }
+                explotar(item.x, item.y, "#ff4757");
+                if (vidas <= 0) finDelJuego();
             } else {
                 puntos += item.puntos;
-                explotar(item.x, item.y, "#c8a8ff");
                 document.getElementById("puntos").textContent = puntos;
                 nivel = Math.floor(puntos / 100) + 1;
                 document.getElementById("nivel").textContent = nivel;
+                explotar(item.x, item.y, "#c8a8ff");
             }
             return false;
         }
 
-        // Salió por abajo (perdió flor)
-        if(item.y > canvas.height + 30){
-            if(!item.malo){
+        // Fuera de pantalla
+        if (item.y > canvas.height + 40) {
+            if (!item.malo) {
                 vidas--;
                 document.getElementById("vidas").textContent = vidas;
-                if(vidas <= 0){ finDelJuego(); }
+                if (vidas <= 0) finDelJuego();
             }
             return false;
         }
 
         ctx.fillText(item.emoji, item.x, item.y);
         return true;
-
     });
 
     // Partículas
+    ctx.globalAlpha = 1;
     particulas = particulas.filter(p => {
-        p.x  += p.vx;
-        p.y  += p.vy;
-        p.vy += 0.15;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.18;
         p.vida--;
-        ctx.globalAlpha = p.vida / 25;
-        ctx.fillStyle   = p.color;
+        ctx.globalAlpha = p.vida / 28;
+        ctx.fillStyle = p.color;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+        ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
         ctx.fill();
         return p.vida > 0;
     });
     ctx.globalAlpha = 1;
 
-    // Cursor
-    ctx.font = "22px serif";
-    ctx.textAlign = "center";
-    ctx.fillText("🌿", mouseX, cesta.y - 8);
-
+    // Cursor / Cesta visual (solo desktop)
+    if (window.innerWidth > 768) {
+        ctx.font = "26px serif";
+        ctx.fillText("🌿", mouseX, cesta.y - 12);
+    }
 }
 
-function finDelJuego(){
-
+function finDelJuego() {
     corriendo = false;
     cancelAnimationFrame(frameId);
 
     document.getElementById("puntajeFinal").textContent = puntos;
 
-    if(puntos >= 200){
+    if (puntos >= 200) {
         document.getElementById("emojiResultado").textContent = "🏆";
-        document.getElementById("tituloFin").textContent      = "¡Increíble!";
-    } else if(puntos >= 80){
+        document.getElementById("tituloFin").textContent = "¡Increíble!";
+    } else if (puntos >= 80) {
         document.getElementById("emojiResultado").textContent = "🌸";
-        document.getElementById("tituloFin").textContent      = "¡Bien hecho!";
+        document.getElementById("tituloFin").textContent = "¡Muy bien!";
     } else {
         document.getElementById("emojiResultado").textContent = "😢";
-        document.getElementById("tituloFin").textContent      = "¡Game Over!";
+        document.getElementById("tituloFin").textContent = "¡Game Over!";
     }
 
     document.getElementById("pantallaFin").style.display = "flex";
-
 }
 
-function reiniciar(){
-
+function reiniciar() {
     document.getElementById("pantallaFin").style.display = "none";
 
-    puntos    = 0;
-    vidas     = 3;
-    nivel     = 1;
-    pausado   = false;
+    puntos = 0;
+    vidas = 3;
+    nivel = 1;
+    pausado = false;
     corriendo = true;
-    items     = [];
-    particulas= [];
-    tickSpawn = 0;
+    items = [];
+    particulas = [];
 
     document.getElementById("puntos").textContent = 0;
-    document.getElementById("vidas").textContent  = 3;
-    document.getElementById("nivel").textContent  = 1;
+    document.getElementById("vidas").textContent = 3;
+    document.getElementById("nivel").textContent = 1;
 
     loop();
-
 }
 
 loop();
