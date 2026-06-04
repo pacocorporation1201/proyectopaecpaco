@@ -233,102 +233,53 @@ function interpretarClima(code){
 
 async function crearRegistro(){
 
-  const alumno =
-  document.getElementById("alumno").value;
+  try{
 
-  const altura =
-  document.getElementById("altura").value;
+    const alumno =
+    document.getElementById("alumno").value;
 
-  const fecha =
-  document.getElementById("fecha").value;
+    const altura =
+    document.getElementById("altura").value;
 
-  const imagen =
-  document.getElementById("imagenRegistro").files[0];
+    const fecha =
+    document.getElementById("fecha").value;
 
-  const formData =
-  new FormData();
+    const imagen =
+    document.getElementById("imagenRegistro").files[0];
 
-  formData.append("alumno", alumno);
-  formData.append("altura", altura);
-  formData.append("fecha", fecha);
+    const formData =
+    new FormData();
 
-  if(imagen){
+    formData.append("alumno", alumno);
+    formData.append("altura", altura);
+    formData.append("fecha", fecha);
 
-    formData.append("imagen", imagen);
+    if(imagen){
+      formData.append("imagen", imagen);
+    }
 
-  }
+    const res =
+    await fetch("/registros",{
+      method:"POST",
+      body:formData
+    });
 
-  await fetch("/registros",{
+    console.log("STATUS:", res.status);
 
-    method:"POST",
-    body:formData
+    const texto =
+    await res.text();
 
-  });
+    console.log("RESPUESTA:", texto);
 
-  cargarRegistros();
+    cargarRegistros();
 
-}
+  }catch(error){
 
-async function cargarRegistros(){
-
-  const res =
-  await fetch("/registros");
-
-  const data =
-  await res.json();
-
-  const lista =
-  document.getElementById("listaRegistros");
-
-  lista.innerHTML = "";
-
-  for(const r of data){
-
-    const comentariosHTML =
-    await obtenerComentariosHTML("registro", r._id);
-
-    const btnBorrar = esAdmin
-      ? `<button type="button" class="btn-borrar" style="margin-top:10px;"
-           onclick="borrarPublicacion('registros','${r._id}', cargarRegistros)">
-           🗑️ Borrar registro
-         </button>`
-      : "";
-
-    lista.innerHTML += `
-      <div class="card" id="item-registro-${r._id}">
-        <h2>${r.alumno}</h2>
-        <p>🌱 ${r.altura} cm</p>
-        <p>📅 ${r.fecha}</p>
-        ${r.imagen ? `<img src="${r.imagen}" class="imagenCard">` : ""}
-        ${btnBorrar}
-        <div class="seccion-comentarios">
-          ${comentariosHTML}
-          <div class="form-comentario">
-            <input type="text" placeholder="Tu nombre" id="autor-registro-${r._id}">
-            <textarea placeholder="Escribe un comentario..." id="texto-registro-${r._id}" rows="2"></textarea>
-            <button type="button" onclick="enviarComentario('registro','${r._id}', cargarRegistros)">💬 Comentar</button>
-          </div>
-        </div>
-      </div>
-    `;
+    console.error("ERROR:", error);
 
   }
 
 }
-
-// Borrar cualquier publicación (registros, articulos, diagramas, tutoriales)
-async function borrarPublicacion(coleccion, id, recargarFn){
-
-  if(!confirm("¿Seguro que quieres borrar esta publicación?")) return;
-
-  await fetch(`/${coleccion}/${id}`,{
-    method:"DELETE"
-  });
-
-  recargarFn();
-
-}
-
 
 // =======================
 // ARTICULOS
