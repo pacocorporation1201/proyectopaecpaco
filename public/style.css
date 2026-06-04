@@ -392,3 +392,69 @@ label { font-weight: bold; color: #333; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes slideRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+
+/* ==========================================
+   DISEÑO PARA CELULARES (PANTALLAS CHICAS)
+   ========================================== */
+@media (max-width: 768px) {
+  
+  /* 1. Transforma la barra lateral en barra inferior fija */
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;      /* Permite deslizar de lado si los botones no caben */
+    white-space: nowrap;   /* Mantiene los botones en una sola línea */
+    background-color: #2b2b2b; /* Ajusta este color al fondo de tu app */
+    z-index: 1000;
+    padding: 8px 5px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+  }
+
+  /* Oculta el título "Lavanda" para ahorrar pantalla en móvil */
+  .sidebar h2 {
+    display: none;
+  }
+
+  /* 2. Adapta los botones para que se acomoden de lado */
+  .sidebar button {
+    flex: 1;
+    min-width: 100px;      /* Tamaño mínimo cómodo para presionar con el dedo */
+    padding: 10px 5px;
+    font-size: 13px;
+    text-align: center;
+    margin: 0 4px;
+  }
+
+  /* 3. Ajusta el contenedor que tú llamaste ".contenido" */
+  .contenido {
+    margin-left: 0 !important;   /* Quita el espacio del menú de PC */
+    margin-bottom: 80px;         /* Espacio abajo para que la barra no tape nada */
+    padding: 15px;
+  }
+
+  /* 4. Hace que el banner principal (Hero) se vea en vertical */
+  .hero-contenido {
+    display: flex;
+    flex-direction: column-reverse; /* Pone la imagen arriba y el texto abajo */
+    gap: 20px;
+  }
+
+  .hero-imagen img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  /* 5. Acomoda las tarjetas de abajo en una sola columna */
+  .cardsInicio {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+}
