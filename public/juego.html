@@ -59,7 +59,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.75);
+            background: rgba(0,0,0,0.8);
             justify-content: center;
             align-items: center;
             z-index: 100;
@@ -85,12 +85,20 @@
             font-weight: bold;
         }
 
-        a.volver {
-            display: inline-block;
-            margin-top: 20px;
-            font-size: 14px;
-            color: var(--morado);
-            text-decoration: none;
+        .recompensa {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(124, 92, 191, 0.95);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            display: none;
+            z-index: 200;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
     </style>
 </head>
@@ -108,10 +116,13 @@
     <canvas id="canvas" width="480" height="500"></canvas>
 
     <p class="controles">
-        👆 Mueve con el dedo · Toca rápido arriba para pausar
+        👆 Mueve con el dedo • Toca arriba para pausar
     </p>
 
     <a class="volver" href="index.html">← Volver a Lavanda App</a>
+
+    <!-- Recompensa flotante -->
+    <div id="recompensa" class="recompensa"></div>
 
     <div id="pantallaFin">
         <div class="caja-fin">
@@ -131,15 +142,12 @@ let puntos = 0, vidas = 3, nivel = 1;
 let pausado = false;
 let corriendo = true;
 let mouseX = canvas.width / 2;
+let ultimaRecompensa = 0;
 
 const cesta = { x: canvas.width/2, y: canvas.height-50, w: 90, h: 22, color: "#7c5cbf" };
 let items = [], particulas = [];
 
-// ==================== EVENTOS TOUCH Y MOUSE ====================
-
-let lastTap = 0;
-let touchStartY = 0;
-
+// ==================== EVENTOS ====================
 canvas.addEventListener("mousemove", e => {
     const rect = canvas.getBoundingClientRect();
     mouseX = e.clientX - rect.left;
@@ -149,14 +157,6 @@ canvas.addEventListener("touchstart", e => {
     e.preventDefault();
     const rect = canvas.getBoundingClientRect();
     mouseX = e.touches[0].clientX - rect.left;
-    touchStartY = e.touches[0].clientY;
-
-    // Detectar toque rápido (tap) para pausar
-    const now = Date.now();
-    if (now - lastTap < 300 && touchStartY < canvas.height * 0.4) { // Solo en la parte superior
-        pausado = !pausado;
-    }
-    lastTap = now;
 });
 
 canvas.addEventListener("touchmove", e => {
@@ -165,10 +165,16 @@ canvas.addEventListener("touchmove", e => {
     mouseX = e.touches[0].clientX - rect.left;
 });
 
-canvas.addEventListener("touchend", e => e.preventDefault());
+let lastTap = 0;
+canvas.addEventListener("touchstart", e => {
+    const now = Date.now();
+    if (now - lastTap < 250) {
+        pausado = !pausado;
+    }
+    lastTap = now;
+});
 
-// ==================== RESTO DEL JUEGO ====================
-
+// ==================== JUEGO ====================
 const TIPOS = {
     flor1: { emoji:"🌸", puntos:10, malo:false },
     flor2: { emoji:"💜", puntos:15, malo:false },
@@ -178,7 +184,7 @@ const TIPOS = {
 };
 
 function tipoAleatorio(){
-    const pMala = Math.min(0.15 + nivel * 0.05, 0.45);
+    const pMala = Math.min(0.12 + nivel * 0.06, 0.55); // más fácil al inicio
     return Math.random() < pMala ? 
         (Math.random() < 0.5 ? "plaga" : "piedra") :
         ["flor1","flor2","flor3"][Math.floor(Math.random()*3)];
@@ -190,7 +196,7 @@ function crearItem(){
     items.push({
         x: 20 + Math.random()*(canvas.width-40),
         y: -30,
-        vy: 1.7 + Math.random() * nivel * 0.8,
+        vy: 1.4 + Math.random() * (nivel * 0.7), // más lento al inicio
         emoji: info.emoji,
         puntos: info.puntos,
         malo: info.malo,
@@ -211,6 +217,13 @@ function explotar(x, y, color){
     }
 }
 
+function mostrarRecompensa(texto){
+    const div = document.getElementById("recompensa");
+    div.textContent = texto;
+    div.style.display = "block";
+    setTimeout(() => div.style.display = "none", 2800);
+}
+
 const estrellas = Array.from({length:50}, () => ({
     x: Math.random()*canvas.width,
     y: Math.random()*canvas.height,
@@ -229,8 +242,6 @@ function loop(){
         ctx.font = "bold 36px Segoe UI";
         ctx.textAlign = "center";
         ctx.fillText("⏸ PAUSA", canvas.width/2, canvas.height/2);
-        ctx.font = "18px Segoe UI";
-        ctx.fillText("Toca arriba para continuar", canvas.width/2, canvas.height/2 + 50);
         return;
     }
 
@@ -240,7 +251,7 @@ function loop(){
 
     // Estrellas
     estrellas.forEach(s => {
-        s.op = Math.max(0.2, Math.min(1, s.op + (Math.random()-0.5)*0.1));
+        s.op = Math.max(0.2, Math.min(1, s.op + (Math.random()-0.5)*0.08));
         ctx.globalAlpha = s.op;
         ctx.fillStyle = "#e8d0ff";
         ctx.beginPath();
@@ -249,8 +260,8 @@ function loop(){
     });
     ctx.globalAlpha = 1;
 
-    // Mover cesta
-    cesta.x += (mouseX - cesta.x) * 0.25;
+    // Mover cesta MÁS RÁPIDO
+    cesta.x += (mouseX - cesta.x) * 0.38; // aumentado para celular
     cesta.x = Math.max(45, Math.min(canvas.width-45, cesta.x));
 
     // Dibujar cesta
@@ -261,8 +272,9 @@ function loop(){
     ctx.roundRect(cesta.x - cesta.w/2, cesta.y, cesta.w, 8, 4);
     ctx.fill();
 
-    // Spawn
-    if(Math.random() < 0.04 + nivel*0.009) crearItem();
+    // Spawn (más difícil después de 400)
+    const spawnRate = puntos >= 400 ? 0.085 : 0.038;
+    if(Math.random() < spawnRate) crearItem();
 
     // Items
     ctx.font = "30px serif";
@@ -274,7 +286,7 @@ function loop(){
         // Colisión
         if(item.y + item.size/2 >= cesta.y && 
            item.y - item.size/2 <= cesta.y + cesta.h &&
-           Math.abs(item.x - cesta.x) < cesta.w/2 + 18){
+           Math.abs(item.x - cesta.x) < cesta.w/2 + 20){
 
             if(item.malo){
                 vidas--;
@@ -284,9 +296,23 @@ function loop(){
             } else {
                 puntos += item.puntos;
                 document.getElementById("puntos").textContent = puntos;
-                nivel = Math.floor(puntos / 100) + 1;
+                
+                nivel = Math.floor(puntos / 80) + 1;
                 document.getElementById("nivel").textContent = nivel;
+
                 explotar(item.x, item.y, "#c8a8ff");
+
+                // Recompensas especiales
+                if(puntos >= 500 && ultimaRecompensa < 500){
+                    mostrarRecompensa("¡Ganaste un Jabón! 🎉");
+                    ultimaRecompensa = 500;
+                } else if(puntos >= 600 && ultimaRecompensa < 600){
+                    mostrarRecompensa("¡Ganaste una Mascarilla! ✨");
+                    ultimaRecompensa = 600;
+                } else if(puntos >= 700 && ultimaRecompensa < 700){
+                    mostrarRecompensa("¡Ganaste Sales de Baño y Pomada! 🛁");
+                    ultimaRecompensa = 700;
+                }
             }
             return false;
         }
@@ -321,12 +347,12 @@ function finDelJuego(){
     corriendo = false;
     document.getElementById("puntajeFinal").textContent = puntos;
 
-    if(puntos >= 200){
+    if(puntos >= 700){
+        document.getElementById("emojiResultado").textContent = "🌟";
+        document.getElementById("tituloFin").textContent = "¡Legendario!";
+    } else if(puntos >= 400){
         document.getElementById("emojiResultado").textContent = "🏆";
-        document.getElementById("tituloFin").textContent = "¡Increíble!";
-    } else if(puntos >= 80){
-        document.getElementById("emojiResultado").textContent = "🌸";
-        document.getElementById("tituloFin").textContent = "¡Muy bien!";
+        document.getElementById("tituloFin").textContent = "¡Excelente!";
     } else {
         document.getElementById("emojiResultado").textContent = "😢";
         document.getElementById("tituloFin").textContent = "¡Game Over!";
@@ -337,7 +363,7 @@ function finDelJuego(){
 
 function reiniciar(){
     document.getElementById("pantallaFin").style.display = "none";
-    puntos = 0; vidas = 3; nivel = 1; pausado = false; corriendo = true;
+    puntos = 0; vidas = 3; nivel = 1; pausado = false; corriendo = true; ultimaRecompensa = 0;
     items = []; particulas = [];
 
     document.getElementById("puntos").textContent = 0;
