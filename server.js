@@ -359,6 +359,77 @@ async(req,res)=>{
 
 });
 
+// =======================
+// PRODUCTOS
+// =======================
+
+app.post(
+"/productos",
+upload.single("imagen"),
+async(req,res)=>{
+
+  try{
+
+    const nuevo =
+    new Producto({
+
+      nombre:req.body.nombre,
+
+      descripcion:req.body.descripcion,
+
+      precio:req.body.precio,
+
+      imagen:
+      req.file
+      ? req.file.path
+      : ""
+
+    });
+
+    await nuevo.save();
+
+    res.json(nuevo);
+
+  }catch(error){
+
+    console.log(error);
+
+  }
+
+});
+
+
+app.get(
+"/productos",
+async(req,res)=>{
+
+  const datos =
+  await Producto.find();
+
+  res.json(datos);
+
+});
+
+
+app.delete(
+"/productos/:id",
+async(req,res)=>{
+
+  try{
+
+    await Producto.findByIdAndDelete(req.params.id);
+
+    res.json({ ok:true });
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).send(error);
+
+  }
+
+});
 
 // =======================
 // DIAGRAMAS

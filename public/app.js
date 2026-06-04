@@ -40,11 +40,13 @@ window.onload = () => {
   cargarClima();
   cargarRegistros();
   cargarArticulos();
+  cargarProductos();
   cargarDiagramas();
   cargarTutoriales();
   verificarExcelDisponible();
   cargarLogo();
   cargarRedesInicio();
+  
 
 };
 
@@ -133,6 +135,7 @@ function entrar(){
     // Recargar todo para que aparezcan botones de borrar
     cargarRegistros();
     cargarArticulos();
+    cargarProductos();
     cargarDiagramas();
     cargarTutoriales();
     cargarRedesInicio();
@@ -410,7 +413,127 @@ async function cargarArticulos(){
   }
 
 }
+// =======================
+// PRODUCTOS
+// =======================
 
+async function crearProducto(){
+
+  const nombre =
+  document.getElementById("nombreProducto").value;
+
+  const descripcion =
+  document.getElementById("descripcionProducto").value;
+
+  const precio =
+  document.getElementById("precioProducto").value;
+
+  const imagen =
+  document.getElementById("imagenProducto").files[0];
+
+  const formData =
+  new FormData();
+
+  formData.append("nombre", nombre);
+  formData.append("descripcion", descripcion);
+  formData.append("precio", precio);
+
+  if(imagen){
+
+    formData.append("imagen", imagen);
+
+  }
+
+  await fetch("/productos",{
+
+    method:"POST",
+    body:formData
+
+  });
+
+  cargarProductos();
+
+}
+async function cargarProductos(){
+
+  const res =
+  await fetch("/productos");
+
+  const data =
+  await res.json();
+
+  const lista =
+  document.getElementById("listaProductos");
+
+  if(!lista) return;
+
+  lista.innerHTML = "";
+
+  for(const p of data){
+
+    const comentariosHTML =
+    await obtenerComentariosHTML(
+      "producto",
+      p._id
+    );
+
+    const btnBorrar = esAdmin
+      ? `<button
+           type="button"
+           class="btn-borrar"
+           onclick="borrarPublicacion('productos','${p._id}',cargarProductos)">
+           🗑️ Borrar producto
+         </button>`
+      : "";
+
+    lista.innerHTML += `
+      <div class="card">
+
+        <h2>${p.nombre}</h2>
+
+        <p>${p.descripcion}</p>
+
+        <p><strong>💲${p.precio}</strong></p>
+
+        ${p.imagen
+          ? `<img src="${p.imagen}" class="imagenCard">`
+          : ""
+        }
+
+        ${btnBorrar}
+
+        <div class="seccion-comentarios">
+
+          ${comentariosHTML}
+
+          <div class="form-comentario">
+
+            <input
+              type="text"
+              placeholder="Tu nombre"
+              id="autor-producto-${p._id}">
+
+            <textarea
+              placeholder="Comentario"
+              id="texto-producto-${p._id}">
+            </textarea>
+
+            <button
+              type="button"
+              onclick="enviarComentario('producto','${p._id}',cargarProductos)">
+              💬 Comentar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
+  }
+
+}
 
 // =======================
 // DIAGRAMAS
