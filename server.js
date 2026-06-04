@@ -150,6 +150,20 @@ mongoose.model("Articulo",{
 
 });
 
+const Producto =
+mongoose.model("Producto",{
+
+  nombre:String,
+
+  descripcion:String,
+
+  precio:String,
+
+  imagen:String
+
+});
+
+
 
 const Diagrama =
 mongoose.model("Diagrama",{
@@ -585,7 +599,7 @@ async(req,res)=>{
       autor:req.body.autor,
 
       texto:req.body.texto
-
+ 
     });
 
     await nuevo.save();

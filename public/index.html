@@ -171,6 +171,45 @@
                 <input type="file" id="imagenArticulo" accept="image/*">
                 <button type="button" onclick="crearArticulo()">Publicar Artículo</button>
             </form>
+            <form class="card">
+
+                <h2>🛒 Crear Producto</h2>
+
+                <label for="nombreProducto">Nombre:</label>
+                <input
+                type="text"
+                id="nombreProducto"
+                placeholder="Nombre del producto"
+                required>
+
+                <label for="descripcionProducto">Descripción:</label>
+                <textarea
+                id="descripcionProducto"
+                rows="4"
+                placeholder="Descripción del producto"
+                required>
+                </textarea>
+
+                <label for="precioProducto">Precio:</label>
+                <input
+                type="number"
+                id="precioProducto"
+                placeholder="Precio"
+                required>
+
+                <label for="imagenProducto">Imagen:</label>
+                <input
+                type="file"
+                id="imagenProducto"
+                accept="image/*">
+
+                <button
+                type="button"
+                onclick="crearProducto()">
+
+                Publicar Producto</button>
+
+            </form>
 
             <form class="card">
                 <h2>📊 Crear Diagrama</h2>
