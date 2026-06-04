@@ -280,7 +280,79 @@ async function crearRegistro(){
   }
 
 }
+async function cargarRegistros(){
 
+  const res =
+  await fetch("/registros");
+
+  const data =
+  await res.json();
+
+  const lista =
+  document.getElementById("listaRegistros");
+
+  lista.innerHTML = "";
+
+  for(const r of data){
+
+    const comentariosHTML =
+    await obtenerComentariosHTML("registro", r._id);
+
+    const btnBorrar = esAdmin
+      ? `<button type="button" class="btn-borrar"
+           onclick="borrarPublicacion('registros','${r._id}',cargarRegistros)">
+           🗑️ Borrar registro
+         </button>`
+      : "";
+
+    lista.innerHTML += `
+      <div class="card">
+
+        <h2>${r.alumno}</h2>
+
+        <p>🌱 ${r.altura} cm</p>
+
+        <p>📅 ${r.fecha}</p>
+
+        ${r.imagen
+          ? `<img src="${r.imagen}" class="imagenCard">`
+          : ""
+        }
+
+        ${btnBorrar}
+
+        <div class="seccion-comentarios">
+
+          ${comentariosHTML}
+
+          <div class="form-comentario">
+
+            <input
+              type="text"
+              placeholder="Tu nombre"
+              id="autor-registro-${r._id}">
+
+            <textarea
+              placeholder="Comentario"
+              id="texto-registro-${r._id}">
+            </textarea>
+
+            <button
+              type="button"
+              onclick="enviarComentario('registro','${r._id}',cargarRegistros)">
+              💬 Comentar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
+  }
+
+}
 // =======================
 // ARTICULOS
 // =======================
