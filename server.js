@@ -149,6 +149,18 @@ mongoose.model("Articulo",{
   imagen:String
 
 });
+const Producto =
+mongoose.model("Producto",{
+
+  nombre:String,
+
+  descripcion:String,
+
+  precio:String,
+
+  imagen:String
+
+});
 
 
 const Diagrama =

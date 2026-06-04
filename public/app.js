@@ -794,8 +794,13 @@ async function borrarComentario(id, seccion, referenciaId){
   });
 
   if(seccion === "registro")  cargarRegistros();
+
   if(seccion === "articulo")  cargarArticulos();
+
+  if(seccion === "producto")  cargarProductos();
+
   if(seccion === "diagrama")  cargarDiagramas();
+
   if(seccion === "tutorial")  cargarTutoriales();
 
 }
@@ -1245,5 +1250,40 @@ async function borrarRedSocial(id){
   await fetch(`/redes/${id}`,{ method:"DELETE" });
 
   cargarRedesInicio();
+
+}
+async function borrarPublicacion(ruta,id,recargar){
+
+  if(!confirm("¿Deseas borrar este elemento?")){
+    return;
+  }
+
+  try{
+
+    const res =
+    await fetch(`/${ruta}/${id}`,{
+      method:"DELETE"
+    });
+
+    const data =
+    await res.json();
+
+    if(data.ok){
+
+      recargar();
+
+    }else{
+
+      alert("No se pudo borrar");
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+    alert("Error al borrar");
+
+  }
 
 }
