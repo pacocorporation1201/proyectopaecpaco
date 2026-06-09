@@ -458,3 +458,40 @@ label { font-weight: bold; color: #333; }
     gap: 15px;
   }
 }
+ilos extra · CSS
+/* ===================================================
+   Pega estos estilos al FINAL de tu style.css
+   =================================================== */
+ 
+/* Imágenes — cursor pointer para indicar que se puede ampliar */
+.imagenZoom {
+  cursor: zoom-in;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+ 
+.imagenZoom:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+}
+ 
+/* Videos de YouTube — responsive 16:9 */
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  margin: 14px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+ 
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+ 

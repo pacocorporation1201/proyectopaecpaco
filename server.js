@@ -101,7 +101,7 @@ new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async(req, file) => ({
     folder: "lavanda/logos",
-    public_id: "logo-principal",   // sobreescribe siempre el mismo
+    public_id: "logo-principal",
     allowed_formats: ["jpg","png","jpeg","webp"]
   })
 });
@@ -113,7 +113,7 @@ new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async(req, file) => ({
     folder: "lavanda/logos",
-    public_id: "logo-secundario",  // sobreescribe siempre el mismo
+    public_id: "logo-secundario",
     allowed_formats: ["jpg","png","jpeg","webp"]
   })
 });
@@ -204,7 +204,7 @@ mongoose.model("RedSocial",{
 
   nombre:   String,
 
-  plataforma: String,  // instagram | facebook | twitter | tiktok | youtube | otro
+  plataforma: String,
 
   url:      String,
 
@@ -223,6 +223,39 @@ const Logo2Config =
 mongoose.model("Logo2Config",{
   url:   String,
   fecha: { type: Date, default: Date.now }
+});
+
+
+// =======================
+// LOGIN  ← NUEVO: contraseñas solo en el servidor
+// =======================
+
+app.post("/login", (req, res) => {
+
+  const { tipo, pass } = req.body;
+
+  // Las contraseñas vienen de variables de entorno en Render
+  // Nunca se exponen al navegador
+  if(
+    tipo === "admin" &&
+    pass === process.env.PASS_ADMIN
+  ){
+    return res.json({ ok: true, rol: "admin" });
+  }
+
+  if(
+    tipo === "registro" &&
+    pass === process.env.PASS_REGISTRO
+  ){
+    return res.json({ ok: true, rol: "registro" });
+  }
+
+  if(tipo === "visitante"){
+    return res.json({ ok: true, rol: "visitante" });
+  }
+
+  res.json({ ok: false });
+
 });
 
 
@@ -744,7 +777,7 @@ async(req, res) => {
     await LogoConfig.deleteMany({});
 
     const doc = new LogoConfig({
-      url: req.file.path   // Cloudinary devuelve URL completa en path
+      url: req.file.path
     });
 
     await doc.save();
@@ -794,7 +827,7 @@ async(req, res) => {
     await Logo2Config.deleteMany({});
 
     const doc = new Logo2Config({
-      url: req.file.path   // Cloudinary devuelve URL completa en path
+      url: req.file.path
     });
 
     await doc.save();
