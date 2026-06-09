@@ -94,7 +94,7 @@
                     <h2>🛠 Panel Administrador</h2>
                     <button type="button" onclick="cambiarColor()">🎨 Cambiar Color Aleatorio</button>
                     <button type="button" onclick="modoMantenimiento()">🚧 Activar/Desactivar Mantenimiento</button>
-                    <button type="button" class="btn-borrar" onclick="limpiarSistema()" style="margin-top: 15px; width: 100%;">🗑️ Borrar toda la base de datos (Reset)</button>
+                    <button type="button" class="btn-borrar" onclick="limpiarSistema()" style="margin-top:15px; width:100%;">🗑️ Borrar toda la base de datos (Reset)</button>
                 </div>
 
                 <!-- LOGO 1 -->
@@ -126,7 +126,7 @@
                 </div>
             </div>
 
-            <!-- FORMULARIO REGISTRO (registrador y admin) -->
+            <!-- FORMULARIO REGISTRO -->
             <form class="card">
                 <h2>🌱 Nuevo Registro</h2>
                 <label for="alumno">Nombre del alumno:</label>
@@ -138,9 +138,10 @@
                 <label for="imagenRegistro">Imagen de la planta:</label>
                 <input type="file" id="imagenRegistro" accept="image/*">
                 <button type="button" onclick="crearRegistro()">Guardar Registro</button>
+                <p id="estadoRegistro" style="margin-top:8px; font-size:13px; color:var(--verde-principal);"></p>
             </form>
 
-            <!-- FORMULARIO REDES SOCIALES (registrador y admin) -->
+            <!-- FORMULARIO REDES SOCIALES -->
             <form class="card">
                 <h2>🌐 Publicar Red Social</h2>
                 <p style="font-size:14px; color:#666; margin-bottom:12px;">Agrega una red social que aparecerá en la página de inicio.</p>
@@ -161,6 +162,7 @@
                 <p id="estadoRedSocial" style="margin-top:8px; font-size:13px; color:var(--verde-principal);"></p>
             </form>
 
+            <!-- FORMULARIO ARTÍCULO -->
             <form class="card">
                 <h2>📰 Crear Artículo</h2>
                 <label for="tituloArticulo">Título del artículo:</label>
@@ -170,47 +172,25 @@
                 <label for="imagenArticulo">Imagen representativa:</label>
                 <input type="file" id="imagenArticulo" accept="image/*">
                 <button type="button" onclick="crearArticulo()">Publicar Artículo</button>
+                <p id="estadoArticulo" style="margin-top:8px; font-size:13px; color:var(--verde-principal);"></p>
             </form>
+
+            <!-- FORMULARIO PRODUCTO -->
             <form class="card">
-
                 <h2>🛒 Crear Producto</h2>
-
                 <label for="nombreProducto">Nombre:</label>
-                <input
-                type="text"
-                id="nombreProducto"
-                placeholder="Nombre del producto"
-                required>
-
+                <input type="text" id="nombreProducto" placeholder="Nombre del producto" required>
                 <label for="descripcionProducto">Descripción:</label>
-                <textarea
-                id="descripcionProducto"
-                rows="4"
-                placeholder="Descripción del producto"
-                required>
-                </textarea>
-
+                <textarea id="descripcionProducto" rows="4" placeholder="Descripción del producto" required></textarea>
                 <label for="precioProducto">Precio:</label>
-                <input
-                type="number"
-                id="precioProducto"
-                placeholder="Precio"
-                required>
-
+                <input type="number" id="precioProducto" placeholder="Precio" required>
                 <label for="imagenProducto">Imagen:</label>
-                <input
-                type="file"
-                id="imagenProducto"
-                accept="image/*">
-
-                <button
-                type="button"
-                onclick="crearProducto()">
-
-                Publicar Producto</button>
-
+                <input type="file" id="imagenProducto" accept="image/*">
+                <button type="button" onclick="crearProducto()">Publicar Producto</button>
+                <p id="estadoProducto" style="margin-top:8px; font-size:13px; color:var(--verde-principal);"></p>
             </form>
 
+            <!-- FORMULARIO DIAGRAMA -->
             <form class="card">
                 <h2>📊 Crear Diagrama</h2>
                 <label for="tituloDiagrama">Título del diagrama:</label>
@@ -218,8 +198,10 @@
                 <label for="imagenDiagrama">Subir diagrama:</label>
                 <input type="file" id="imagenDiagrama" accept="image/*" required>
                 <button type="button" onclick="crearDiagrama()">Publicar Diagrama</button>
+                <p id="estadoDiagrama" style="margin-top:8px; font-size:13px; color:var(--verde-principal);"></p>
             </form>
 
+            <!-- FORMULARIO TUTORIAL -->
             <form class="card">
                 <h2>🎥 Crear Tutorial</h2>
                 <label for="tituloTutorial">Título del tutorial:</label>
@@ -227,6 +209,7 @@
                 <label for="linkTutorial">Enlace de YouTube:</label>
                 <input type="url" id="linkTutorial" placeholder="https://www.youtube.com/..." required>
                 <button type="button" onclick="crearTutorial()">Publicar Tutorial</button>
+                <p id="estadoTutorial" style="margin-top:8px; font-size:13px; color:var(--verde-principal);"></p>
             </form>
         </section>
 
@@ -251,9 +234,7 @@
                 </div>
             </div>
             <div id="estadoRegistros"></div>
-
             <div id="listaAlumnos"></div>
-
             <div id="listaRegistros"></div>
         </section>
 
@@ -263,14 +244,12 @@
             <div id="estadoArticulos"></div>
             <div id="listaArticulos"></div>
         </section>
+
         <!-- PRODUCTOS -->
         <section id="productos" class="seccion">
-
             <h1>🛒 Productos</h1>
-
             <div id="listaProductos"></div>
-
-            </section>
+        </section>
 
         <!-- DIAGRAMAS -->
         <section id="diagramas" class="seccion">
@@ -300,9 +279,9 @@
             </select>
             <label for="password">Contraseña:</label>
             <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
-            <div style="margin-top: 15px;">
+            <div style="margin-top:15px;">
                 <button type="button" onclick="entrar()">Entrar</button>
-                <button type="button" style="background: #95a5a6;" onclick="cerrarLogin()">Cancelar</button>
+                <button type="button" style="background:#95a5a6;" onclick="cerrarLogin()">Cancelar</button>
             </div>
         </form>
     </div>

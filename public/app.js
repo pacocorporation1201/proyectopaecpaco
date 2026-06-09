@@ -318,6 +318,9 @@ function interpretarClima(code){
 
 async function crearRegistro(){
 
+  const estado =
+  document.getElementById("estadoRegistro");
+
   try{
 
     const alumno =
@@ -332,9 +335,14 @@ async function crearRegistro(){
     const imagen =
     document.getElementById("imagenRegistro").files[0];
 
-    const formData =
-    new FormData();
+    if(!alumno || !altura || !fecha){
+      estado.textContent = "⚠️ Completa todos los campos.";
+      return;
+    }
 
+    estado.textContent = "Guardando...";
+
+    const formData = new FormData();
     formData.append("alumno", alumno);
     formData.append("altura", altura);
     formData.append("fecha", fecha);
@@ -349,18 +357,29 @@ async function crearRegistro(){
       body:formData
     });
 
-    console.log("STATUS:", res.status);
+    const data = await res.json();
 
-    const texto =
-    await res.text();
+    if(data._id){
 
-    console.log("RESPUESTA:", texto);
+      estado.textContent = "✅ Registro guardado correctamente.";
 
-    cargarRegistros();
+      document.getElementById("alumno").value         = "";
+      document.getElementById("altura").value         = "";
+      document.getElementById("fecha").value          = "";
+      document.getElementById("imagenRegistro").value = "";
+
+      cargarRegistros();
+
+    } else {
+
+      estado.textContent = "❌ Error al guardar el registro.";
+
+    }
 
   }catch(error){
 
     console.error("ERROR:", error);
+    estado.textContent = "❌ Error de conexión.";
 
   }
 
@@ -448,6 +467,9 @@ async function cargarRegistros(){
 
 async function crearArticulo(){
 
+  const estado =
+  document.getElementById("estadoArticulo");
+
   const titulo =
   document.getElementById("tituloArticulo").value;
 
@@ -457,26 +479,43 @@ async function crearArticulo(){
   const imagen =
   document.getElementById("imagenArticulo").files[0];
 
-  const formData =
-  new FormData();
+  if(!titulo || !contenido){
+    estado.textContent = "⚠️ Completa el título y el contenido.";
+    return;
+  }
 
+  estado.textContent = "Publicando...";
+
+  const formData = new FormData();
   formData.append("titulo", titulo);
   formData.append("contenido", contenido);
 
   if(imagen){
-
     formData.append("imagen", imagen);
-
   }
 
-  await fetch("/articulos",{
-
+  const res = await fetch("/articulos",{
     method:"POST",
     body:formData
-
   });
 
-  cargarArticulos();
+  const data = await res.json();
+
+  if(data._id){
+
+    estado.textContent = "✅ Artículo publicado correctamente.";
+
+    document.getElementById("tituloArticulo").value    = "";
+    document.getElementById("contenidoArticulo").value = "";
+    document.getElementById("imagenArticulo").value    = "";
+
+    cargarArticulos();
+
+  } else {
+
+    estado.textContent = "❌ Error al publicar el artículo.";
+
+  }
 
 }
 
@@ -635,6 +674,9 @@ async function guardarEdicionArticulo(id){
 
 async function crearProducto(){
 
+  const estado =
+  document.getElementById("estadoProducto");
+
   const nombre =
   document.getElementById("nombreProducto").value;
 
@@ -647,27 +689,45 @@ async function crearProducto(){
   const imagen =
   document.getElementById("imagenProducto").files[0];
 
-  const formData =
-  new FormData();
+  if(!nombre || !descripcion || !precio){
+    estado.textContent = "⚠️ Completa todos los campos.";
+    return;
+  }
 
+  estado.textContent = "Publicando...";
+
+  const formData = new FormData();
   formData.append("nombre", nombre);
   formData.append("descripcion", descripcion);
   formData.append("precio", precio);
 
   if(imagen){
-
     formData.append("imagen", imagen);
-
   }
 
-  await fetch("/productos",{
-
+  const res = await fetch("/productos",{
     method:"POST",
     body:formData
-
   });
 
-  cargarProductos();
+  const data = await res.json();
+
+  if(data._id){
+
+    estado.textContent = "✅ Producto publicado correctamente.";
+
+    document.getElementById("nombreProducto").value       = "";
+    document.getElementById("descripcionProducto").value  = "";
+    document.getElementById("precioProducto").value       = "";
+    document.getElementById("imagenProducto").value       = "";
+
+    cargarProductos();
+
+  } else {
+
+    estado.textContent = "❌ Error al publicar el producto.";
+
+  }
 
 }
 
@@ -708,7 +768,7 @@ async function cargarProductos(){
 
         <h2>${p.nombre}</h2>
 
-        <p>${p.descripcion}</p>
+        <p class="texto-card">${p.descripcion}</p>
 
         <p><strong>💲${p.precio}</strong></p>
 
@@ -760,31 +820,50 @@ async function cargarProductos(){
 
 async function crearDiagrama(){
 
+  const estado =
+  document.getElementById("estadoDiagrama");
+
   const titulo =
   document.getElementById("tituloDiagrama").value;
 
   const imagen =
   document.getElementById("imagenDiagrama").files[0];
 
-  const formData =
-  new FormData();
+  if(!titulo){
+    estado.textContent = "⚠️ Escribe un título para el diagrama.";
+    return;
+  }
 
+  estado.textContent = "Publicando...";
+
+  const formData = new FormData();
   formData.append("titulo", titulo);
 
   if(imagen){
-
     formData.append("imagen", imagen);
-
   }
 
-  await fetch("/diagramas",{
-
+  const res = await fetch("/diagramas",{
     method:"POST",
     body:formData
-
   });
 
-  cargarDiagramas();
+  const data = await res.json();
+
+  if(data._id){
+
+    estado.textContent = "✅ Diagrama publicado correctamente.";
+
+    document.getElementById("tituloDiagrama").value  = "";
+    document.getElementById("imagenDiagrama").value  = "";
+
+    cargarDiagramas();
+
+  } else {
+
+    estado.textContent = "❌ Error al publicar el diagrama.";
+
+  }
 
 }
 
@@ -845,30 +924,46 @@ async function cargarDiagramas(){
 
 async function crearTutorial(){
 
+  const estado =
+  document.getElementById("estadoTutorial");
+
   const titulo =
   document.getElementById("tituloTutorial").value;
 
   const link =
   document.getElementById("linkTutorial").value;
 
-  await fetch("/tutoriales",{
+  if(!titulo || !link){
+    estado.textContent = "⚠️ Completa el título y el enlace.";
+    return;
+  }
 
+  estado.textContent = "Publicando...";
+
+  const res = await fetch("/tutoriales",{
     method:"POST",
-
     headers:{
       "Content-Type":"application/json"
     },
-
-    body:JSON.stringify({
-
-      titulo,
-      link
-
-    })
-
+    body:JSON.stringify({ titulo, link })
   });
 
-  cargarTutoriales();
+  const data = await res.json();
+
+  if(data._id){
+
+    estado.textContent = "✅ Tutorial publicado correctamente.";
+
+    document.getElementById("tituloTutorial").value = "";
+    document.getElementById("linkTutorial").value   = "";
+
+    cargarTutoriales();
+
+  } else {
+
+    estado.textContent = "❌ Error al publicar el tutorial.";
+
+  }
 
 }
 
