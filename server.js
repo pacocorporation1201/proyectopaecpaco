@@ -404,6 +404,43 @@ async(req,res)=>{
 
 });
 
+
+// Editar artículo (título, contenido e imagen opcional)
+app.put(
+"/articulos/:id",
+upload.single("imagen"),
+async(req,res)=>{
+
+  try{
+
+    const cambios = {
+      titulo:    req.body.titulo,
+      contenido: req.body.contenido
+    };
+
+    if(req.file){
+      cambios.imagen = req.file.path;
+    }
+
+    const actualizado =
+    await Articulo.findByIdAndUpdate(
+      req.params.id,
+      cambios,
+      { new: true }
+    );
+
+    res.json(actualizado);
+
+  }catch(error){
+
+    console.log(error);
+    res.status(500).send(error);
+
+  }
+
+});
+
+
 // =======================
 // PRODUCTOS
 // =======================
